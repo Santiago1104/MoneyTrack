@@ -1,7 +1,6 @@
 package edu.unicauca.moneytrack.Screens
 
 import android.util.Log
-import android.widget.NumberPicker.OnValueChangeListener
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
