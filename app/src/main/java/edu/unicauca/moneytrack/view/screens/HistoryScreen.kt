@@ -1,54 +1,112 @@
 package edu.unicauca.moneytrack.view.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
 
 @Composable
-fun TransactionHistoryScreen() {
-    Column(
+fun TransactionHistoryScreen(
+    navController: NavController,
+    moneyViewModel: MoneyViewModel = viewModel()
+) {
+    // Obteniendo las listas de ingresos y gastos del ViewModel
+    val ingresos by moneyViewModel.listaIngresos.observeAsState(emptyList())
+    val gastos by moneyViewModel.listaGastos.observeAsState(emptyList())
+
+    // Usar una sola LazyColumn para manejar el scroll
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(16.dp)
     ) {
         // Título
-        Text(
-            text = "Historial",
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
+        item {
+            Text(
+                text = "Historial",
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+        }
 
-        // Subtítulo
-        Text(
-            text = "A continuación, se presentan los gastos e ingresos históricos.",
-            fontSize = 14.sp,
-            color = Color.Gray,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+        item {
+            Text(
+                text = "A continuación, se presentan los gastos e ingresos históricos.",
+                fontSize = 14.sp,
+                color = Color.Gray,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+        }
 
-        // Lista de transacciones
-        Column(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            TransactionItem("Bancolombia", "+120.00", "Ingreso", "26/09/2024", true)
-            TransactionItem("Pago 3 semestre", "-120.00", "Otro", "26/09/2024", false)
-            TransactionItem("Pago 3 semestre", "-120.00", "Otro", "26/09/2024", false)
-            TransactionItem("Pago 3 semestre", "-120.00", "Otro", "26/09/2024", false)
+        // Sección de ingresos
+        item {
+            Text(
+                text = "Ingresos",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            )
+        }
+
+        // Lista de ingresos
+        items(ingresos) { ingreso ->
+            TransactionItem(
+                name = ingreso.nombre,
+                amount = "+${ingreso.valor}",
+                type = "Ingreso",
+                date = ingreso.fecha,
+                isPositive = true
+            )
+        }
+
+        // Separador entre ingresos y gastos
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        // Sección de gastos
+        item {
+            Text(
+                text = "Gastos",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            )
+        }
+
+        // Lista de gastos
+        items(gastos) { gasto ->
+            TransactionItem(
+                name = gasto.nombre,
+                amount = "-${gasto.valor}",
+                type = "Gasto",
+                date = gasto.fecha,
+                isPositive = false
+            )
         }
     }
 }
+
 
 @Composable
 fun TransactionItem(name: String, amount: String, type: String, date: String, isPositive: Boolean) {
@@ -82,10 +140,4 @@ fun TransactionItem(name: String, amount: String, type: String, date: String, is
             }
         }
     }
-}
-
-@Composable
-@Preview
-fun PreviewTransactionHistoryScreen() {
-    TransactionHistoryScreen()
 }

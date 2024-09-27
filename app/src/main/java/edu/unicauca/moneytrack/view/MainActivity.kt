@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import edu.unicauca.moneytrack.view.screens.HomeScreen
 import edu.unicauca.moneytrack.view.screens.TestScreen
+import edu.unicauca.moneytrack.view.screens.TransactionHistoryScreen
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
 
 class MainActivity : ComponentActivity() {
@@ -26,8 +27,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp(moneyViewModel: MoneyViewModel) {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "home") {
+    NavHost(navController = navController, startDestination = "history") {
         composable("home") { HomeScreen(navController) }
         composable("test") { TestScreen(moneyViewModel = moneyViewModel) }
+        composable("history") { TransactionHistoryScreen(navController = navController) }
     }
 }
