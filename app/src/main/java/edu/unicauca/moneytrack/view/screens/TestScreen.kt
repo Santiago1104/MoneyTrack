@@ -75,6 +75,5 @@ fun TestScreen(moneyViewModel: MoneyViewModel, modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun TestScreenPreview() {
-    // Aquí puedes crear un MoneyViewModel de prueba si es necesario
     TestScreen(moneyViewModel = MoneyViewModel())
 }
