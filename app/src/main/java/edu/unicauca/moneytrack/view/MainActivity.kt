@@ -1,110 +1,33 @@
 package edu.unicauca.moneytrack.view
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import edu.unicauca.moneytrack.model.clsEntry
-import edu.unicauca.moneytrack.model.clsExpense
-import edu.unicauca.moneytrack.ui.theme.MoneyTrackTheme
+import androidx.compose.runtime.Composable
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import edu.unicauca.moneytrack.view.screens.HomeScreen
+import edu.unicauca.moneytrack.view.screens.TestScreen
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
-import java.util.*
 
 class MainActivity : ComponentActivity() {
-
     private val moneyViewModel: MoneyViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
-            MoneyTrackTheme {
-                Scaffold(
-                    modifier = Modifier.fillMaxSize()
-                ) { innerPadding ->
-                    MoneyTrackScreen(
-                        moneyViewModel = moneyViewModel,
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+            MyApp(moneyViewModel)
         }
     }
 }
 
 @Composable
-fun MoneyTrackScreen(moneyViewModel: MoneyViewModel, modifier: Modifier = Modifier) {
-    // Observar datos del ViewModel
-    val dineroTotal by moneyViewModel.dinero.observeAsState()
-    val listaGastos by moneyViewModel.listaGastos.observeAsState(emptyList())
-    val listaIngresos by moneyViewModel.listaIngresos.observeAsState(emptyList())
-
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        // Mostrar el Dinero Total
-        Text(
-            text = "Dinero Total: ${dineroTotal?.total ?: 0.0}",
-            style = MaterialTheme.typography.headlineMedium
-        )
-
-        // Mostrar la lista de Gastos
-        Text(text = "Gastos:", style = MaterialTheme.typography.headlineSmall)
-        listaGastos.forEach { gasto ->
-            Text(text = "${gasto.nombre}: ${gasto.valor} - Categoría: ${gasto.categoria}")
-        }
-
-        // Mostrar la lista de Ingresos
-        Text(text = "Ingresos:", style = MaterialTheme.typography.headlineSmall)
-        listaIngresos.forEach { ingreso ->
-            Text(text = "${ingreso.nombre}: ${ingreso.valor}")
-        }
-
-        // Botón para agregar gasto con datos quemados de prueba
-        Button(onClick = {
-            val nuevoGasto = clsExpense(
-                id = "",
-                nombre = "Transporte",
-                categoria = "Movilidad",
-                valor = 10000.0,
-                fecha = "23-04/2024",
-            )
-            moneyViewModel.agregarGasto(nuevoGasto)
-            moneyViewModel.actualizarDineroTotal(-nuevoGasto.valor)
-        }) {
-            Text("Añadir Gasto de Prueba")
-        }
-
-        // Botón para agregar ingreso con datos quemados de prueba
-        Button(onClick = {
-            val nuevoIngreso = clsEntry(
-                id = "",
-                nombre = "Venta Freelance",
-                valor = 50000.0,
-                fecha = "23-04-2024"
-            )
-            moneyViewModel.agregarIngreso(nuevoIngreso)
-            moneyViewModel.actualizarDineroTotal(nuevoIngreso.valor)
-        }) {
-            Text("Añadir Ingreso de Prueba")
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun MoneyTrackPreview() {
-    MoneyTrackTheme {
-        MoneyTrackScreen(moneyViewModel = MoneyViewModel())
+fun MyApp(moneyViewModel: MoneyViewModel) {
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = "home") {
+        composable("home") { HomeScreen(navController) }
+        composable("test") { TestScreen(moneyViewModel = moneyViewModel) }
     }
 }

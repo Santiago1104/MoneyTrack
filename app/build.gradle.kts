@@ -66,6 +66,10 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.recyclerview)
 
+    val nav_version = "2.8.0"
+
+    implementation("androidx.navigation:navigation-compose:$nav_version")
+
     val lifecycle_version = "2.8.5"
 
     implementation("androidx.compose.runtime:runtime-livedata:1.5.0") // Ajusta la versión según tu versión de Compose
