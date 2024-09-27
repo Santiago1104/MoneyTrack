@@ -31,14 +31,14 @@ fun TestScreen(moneyViewModel: MoneyViewModel, modifier: Modifier = Modifier) {
 
         // Mostrar la lista de Gastos
         Text(text = "Gastos:", style = MaterialTheme.typography.headlineSmall)
-        listaGastos.forEach { gasto ->
-            Text(text = "${gasto.nombre}: ${gasto.valor} - Categoría: ${gasto.categoria}")
+        listaGastos?.forEach { gasto ->
+            Text(text = "${gasto.nombre}: ${gasto.valor} / Categoría: ${gasto.categoria} / ${gasto.fecha}")
         }
 
         // Mostrar la lista de Ingresos
         Text(text = "Ingresos:", style = MaterialTheme.typography.headlineSmall)
-        listaIngresos.forEach { ingreso ->
-            Text(text = "${ingreso.nombre}: ${ingreso.valor}")
+        listaIngresos?.forEach { ingreso ->
+            Text(text = "${ingreso.nombre}/ ${ingreso.valor} / ${ingreso.fecha}")
         }
 
         // Botón para agregar gasto con datos quemados de prueba
@@ -48,7 +48,6 @@ fun TestScreen(moneyViewModel: MoneyViewModel, modifier: Modifier = Modifier) {
                 nombre = "Transporte",
                 categoria = "Movilidad",
                 valor = 10000.0,
-                fecha = "23-04/2024",
             )
             moneyViewModel.agregarGasto(nuevoGasto)
             moneyViewModel.actualizarDineroTotal(-nuevoGasto.valor)
@@ -62,7 +61,6 @@ fun TestScreen(moneyViewModel: MoneyViewModel, modifier: Modifier = Modifier) {
                 id = "",
                 nombre = "Venta Freelance",
                 valor = 50000.0,
-                fecha = "23-04-2024"
             )
             moneyViewModel.agregarIngreso(nuevoIngreso)
             moneyViewModel.actualizarDineroTotal(nuevoIngreso.valor)

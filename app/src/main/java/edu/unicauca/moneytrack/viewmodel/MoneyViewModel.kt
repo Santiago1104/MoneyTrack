@@ -26,19 +26,25 @@ class MoneyViewModel:ViewModel (){
     private var _dinero = MutableLiveData<clsMoney?>()
     val dinero: MutableLiveData<clsMoney?> = _dinero
 
-    init{
+    init {
         obtenerGastos()
         obtenerIngresos()
         obtenerDinero()
     }
 
-    fun obtenerGastos(){
-        viewModelScope.launch(Dispatchers.IO){
-            try{
+    fun obtenerGastos() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
                 val resultado = db.collection("gastos").get().await()
-                val gastos =  resultado.documents.mapNotNull { it.toObject(clsExpense::class.java) }
-                _listaGastos.postValue(gastos)
-            }catch (e: Exception){
+                if (!resultado.isEmpty) {
+                    val gastos = resultado.documents.mapNotNull { it.toObject(clsExpense::class.java) }
+                    println(gastos)
+                    _listaGastos.postValue(gastos)
+                } else {
+                    // Puedes agregar un log para verificar si los datos están vacíos
+                    println("No se encontraron gastos")
+                }
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
