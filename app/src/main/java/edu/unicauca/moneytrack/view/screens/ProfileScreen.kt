@@ -1,6 +1,7 @@
 package edu.unicauca.moneytrack.view.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -33,17 +34,21 @@ fun ProfileScreen(navController: NavHostController) {
             .padding(16.dp)
     ) {
         items(settingsOptions) { setting ->
-            SettingItem(setting)
+            SettingItem(setting, navController)
         }
     }
 }
-
 @Composable
-fun SettingItem(setting: SettingOption) {
+fun SettingItem(setting: SettingOption, navController: NavHostController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
+            .clickable {
+                if (setting.title == "Autores") {
+                    navController.navigate("authors")
+                }
+            }
     ) {
         Row(
             modifier = Modifier
