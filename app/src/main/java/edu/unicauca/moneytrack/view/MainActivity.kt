@@ -16,8 +16,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import edu.unicauca.moneytrack.view.navigation.BottomNavItem
 import edu.unicauca.moneytrack.view.screens.HomeScreen
-import edu.unicauca.moneytrack.view.screens.ProfileScreen
-import edu.unicauca.moneytrack.view.screens.TransactionHistoryScreen
 import edu.unicauca.moneytrack.view.screens.TestScreen
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
 
@@ -44,15 +42,20 @@ fun MyApp(moneyViewModel: MoneyViewModel) {
             navController = navController,
             startDestination = "home",
             modifier = Modifier.padding(innerPadding)
-        ) {
-            composable("home") { HomeScreen(navController) }
-            composable("test") { TestScreen(moneyViewModel = moneyViewModel) }
-            composable("history") {
-                TransactionHistoryScreen(navController = navController, moneyViewModel = moneyViewModel)
+        ){
+            composable("home") {
+                HomeScreen(
+                    viewModel = moneyViewModel,
+                    onAddGastoClick = { navController.navigate("addGasto") },
+                    onAddIngresoClick = { navController.navigate("addIngreso") }
+                )
             }
-            composable("profile") { ProfileScreen(navController) }
+            composable("addGasto") { /* Pantalla de agregar gasto */ }
+            composable("addIngreso") { /* Pantalla de agregar ingreso */ }
+            composable("test") { TestScreen(moneyViewModel = moneyViewModel) }
+            composable("history") { /* Pantalla de agregar ingreso */}
+            composable("profile") { TestScreen(moneyViewModel = moneyViewModel) }
         }
-
     }
 }
 
