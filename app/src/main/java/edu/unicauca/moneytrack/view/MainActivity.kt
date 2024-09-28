@@ -17,6 +17,7 @@ import androidx.navigation.compose.*
 import edu.unicauca.moneytrack.view.navigation.BottomNavItem
 import edu.unicauca.moneytrack.view.screens.HomeScreen
 import edu.unicauca.moneytrack.view.screens.TestScreen
+import edu.unicauca.moneytrack.view.screens.TransactionHistoryScreen
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
 
 class MainActivity : ComponentActivity() {
@@ -53,7 +54,7 @@ fun MyApp(moneyViewModel: MoneyViewModel) {
             composable("addGasto") { /* Pantalla de agregar gasto */ }
             composable("addIngreso") { /* Pantalla de agregar ingreso */ }
             composable("test") { TestScreen(moneyViewModel = moneyViewModel) }
-            composable("history") { /* Pantalla de agregar ingreso */}
+            composable("history") { TransactionHistoryScreen(navController = navController, moneyViewModel = moneyViewModel) }
             composable("profile") { TestScreen(moneyViewModel = moneyViewModel) }
         }
     }
