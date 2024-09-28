@@ -2,5 +2,12 @@
     <string name="app_name">MoneyTrack</string>
     <string name="home">home</string>
     <string name="history">history</string>
-    <string name="profile">profile</string>
+    <string name="profile">Test</string>
+    <string name="AppTitle">Money Track</string>
+    <string name="AddExpenseButton">Nuevo gasto</string>
+    <string name="AddEntryButton">Nuevo ingreso</string>
+    <string name="CurrentMoney">Dinero actual</string>
+    <string name="Entrys">Ingresos</string>
+    <string name="Expenses">Gastos</string>
+    <string name="Recents">Recientes</string>
 </resources>
