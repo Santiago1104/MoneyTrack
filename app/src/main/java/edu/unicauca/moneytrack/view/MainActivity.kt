@@ -15,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import edu.unicauca.moneytrack.view.navigation.BottomNavItem
+import edu.unicauca.moneytrack.view.screens.AddIngresoScreen
 import edu.unicauca.moneytrack.view.screens.HomeScreen
 import edu.unicauca.moneytrack.view.screens.TestScreen
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
@@ -51,7 +52,7 @@ fun MyApp(moneyViewModel: MoneyViewModel) {
                 )
             }
             composable("addGasto") { /* Pantalla de agregar gasto */ }
-            composable("addIngreso") { /* Pantalla de agregar ingreso */ }
+            composable("addIngreso") { AddIngresoScreen() }
             composable("test") { TestScreen(moneyViewModel = moneyViewModel) }
             composable("history") { /* Pantalla de agregar ingreso */}
             composable("profile") { TestScreen(moneyViewModel = moneyViewModel) }
