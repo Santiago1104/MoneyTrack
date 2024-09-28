@@ -42,12 +42,19 @@ fun MyApp(moneyViewModel: MoneyViewModel) {
             navController = navController,
             startDestination = "home",
             modifier = Modifier.padding(innerPadding)
-        ) {
-            //Aqui añadir las screens con su respectiva ruta
-            composable("home") { HomeScreen(navController) }
+        ){
+            composable("home") {
+                HomeScreen(
+                    viewModel = moneyViewModel,
+                    onAddGastoClick = { navController.navigate("addGasto") },
+                    onAddIngresoClick = { navController.navigate("addIngreso") }
+                )
+            }
+            composable("addGasto") { /* Pantalla de agregar gasto */ }
+            composable("addIngreso") { /* Pantalla de agregar ingreso */ }
             composable("test") { TestScreen(moneyViewModel = moneyViewModel) }
-            composable("history") { /* Screen de historial */ }
-            composable("profile") { /* Screen de configuraciones */}
+            composable("history") { /* Pantalla de agregar ingreso */}
+            composable("profile") { TestScreen(moneyViewModel = moneyViewModel) }
         }
     }
 }
