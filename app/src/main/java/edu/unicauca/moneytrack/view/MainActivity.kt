@@ -1,4 +1,4 @@
-package edu.unicauca.moneytrack
+package edu.unicauca.moneytrack.view
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
