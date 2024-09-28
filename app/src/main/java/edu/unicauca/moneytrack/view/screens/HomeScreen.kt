@@ -38,7 +38,6 @@ fun HomeScreen(
     val dineroActual by viewModel.dinero.observeAsState(initial = null)
     val ingresos by viewModel.listaIngresos.observeAsState(emptyList())
     val gastos by viewModel.listaGastos.observeAsState(emptyList())
-
     val totalIngresos = ingresos.sumOf { it.valor }
     val totalGastos = gastos.sumOf { it.valor }
 
@@ -50,7 +49,7 @@ fun HomeScreen(
     ) {
         Text(text = stringResource(id = R.string.AppTitle), style = MaterialTheme.typography.headlineMedium )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         CircularProgressIndicatorWithText(
             ingresos = totalIngresos,
@@ -79,9 +78,32 @@ fun HomeScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         Text(text = stringResource(id = R.string.Recents), style = MaterialTheme.typography.headlineSmall, modifier = Modifier.align(Alignment.Start) )
+
+        val latestIngreso = ingresos.maxByOrNull { it.fecha }
+        val latestGasto = gastos.maxByOrNull { it.fecha }
+
+        latestIngreso?.let {
+            TransactionItem(
+                name = it.nombre,
+                amount = "$${it.valor.format(2)}",
+                type = "Ingreso", // Adjust type as needed
+                date = it.fecha,
+                isPositive = true
+            )
+        }
+
+        latestGasto?.let {
+            TransactionItem(
+                name = it.nombre,
+                amount = "$${it.valor.format(2)}",
+                type = "Gasto", // Adjust type as needed
+                date = it.fecha,
+                isPositive = false
+            )
+        }
     }
 }
 
