@@ -6,7 +6,6 @@ data class clsMoney(
 ) {
     fun toMap(): Map<String, Any> {
         return mapOf(
-
             "total" to total
         )
     }

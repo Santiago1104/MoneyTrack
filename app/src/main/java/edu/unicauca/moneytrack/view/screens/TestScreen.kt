@@ -10,12 +10,13 @@ import edu.unicauca.moneytrack.model.clsEntry
 import edu.unicauca.moneytrack.model.clsExpense
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
 
+
 @Composable
 fun TestScreen(moneyViewModel: MoneyViewModel, modifier: Modifier = Modifier) {
     // Observar datos del ViewModel
     val dineroTotal by moneyViewModel.dinero.observeAsState()
-    val listaGastos by moneyViewModel.listaGastos.observeAsState(emptyList())
-    val listaIngresos by moneyViewModel.listaIngresos.observeAsState(emptyList())
+    val listaGastos by moneyViewModel.listaGastos.observeAsState()
+    val listaIngresos by moneyViewModel.listaIngresos.observeAsState()
 
     Column(
         modifier = modifier
@@ -31,14 +32,14 @@ fun TestScreen(moneyViewModel: MoneyViewModel, modifier: Modifier = Modifier) {
 
         // Mostrar la lista de Gastos
         Text(text = "Gastos:", style = MaterialTheme.typography.headlineSmall)
-        listaGastos.forEach { gasto ->
-            Text(text = "${gasto.nombre}: ${gasto.valor} - Categoría: ${gasto.categoria}")
+        listaGastos?.forEach { gasto ->
+            Text(text = "${gasto.nombre}: ${gasto.valor} / Categoría: ${gasto.categoria} / ${gasto.fecha}")
         }
 
         // Mostrar la lista de Ingresos
         Text(text = "Ingresos:", style = MaterialTheme.typography.headlineSmall)
-        listaIngresos.forEach { ingreso ->
-            Text(text = "${ingreso.nombre}: ${ingreso.valor}")
+        listaIngresos?.forEach { ingreso ->
+            Text(text = "${ingreso.nombre}/ ${ingreso.valor} / ${ingreso.fecha}")
         }
 
         // Botón para agregar gasto con datos quemados de prueba
@@ -48,10 +49,10 @@ fun TestScreen(moneyViewModel: MoneyViewModel, modifier: Modifier = Modifier) {
                 nombre = "Transporte",
                 categoria = "Movilidad",
                 valor = 10000.0,
-                fecha = "23-04/2024",
             )
             moneyViewModel.agregarGasto(nuevoGasto)
             moneyViewModel.actualizarDineroTotal(-nuevoGasto.valor)
+            moneyViewModel.obtenerGastos()
         }) {
             Text("Añadir Gasto de Prueba")
         }
@@ -62,7 +63,6 @@ fun TestScreen(moneyViewModel: MoneyViewModel, modifier: Modifier = Modifier) {
                 id = "",
                 nombre = "Venta Freelance",
                 valor = 50000.0,
-                fecha = "23-04-2024"
             )
             moneyViewModel.agregarIngreso(nuevoIngreso)
             moneyViewModel.actualizarDineroTotal(nuevoIngreso.valor)
@@ -75,6 +75,5 @@ fun TestScreen(moneyViewModel: MoneyViewModel, modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun TestScreenPreview() {
-    // Aquí puedes crear un MoneyViewModel de prueba si es necesario
     TestScreen(moneyViewModel = MoneyViewModel())
 }

@@ -1,20 +1,21 @@
 package edu.unicauca.moneytrack.model
 
-public data class clsExpense(
-    var id: String = "",
-    var nombre: String = "",
-    var categoria: String = "",
-    var valor: Double = 0.0,
-    var fecha: String = "",
-    var totalDineroId: String = ""
-){
-    fun toMap(): Map<String, Any> {
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
+data class clsExpense(
+    override var id: String = "",
+    override var nombre: String = "",
+    override var valor: Double = 0.0,
+    override var fecha: String = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), // Aquí usas String en vez de LocalDate
+    var categoria: String = ""
+) : clsTransaction() {
+    override fun toMap(): Map<String, Any> {
         return mapOf(
             "nombre" to nombre,
             "categoria" to categoria,
             "valor" to valor,
-            "fecha" to fecha,
-            "totalDineroId" to totalDineroId
+            "fecha" to fecha
         )
     }
 }
