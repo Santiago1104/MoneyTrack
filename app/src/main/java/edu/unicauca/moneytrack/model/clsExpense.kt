@@ -7,16 +7,15 @@ data class clsExpense(
     override var id: String = "",
     override var nombre: String = "",
     override var valor: Double = 0.0,
-    override var fecha: LocalDate = LocalDate.now(),
+    override var fecha: String = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), // Aquí usas String en vez de LocalDate
     var categoria: String = ""
 ) : clsTransaction() {
     override fun toMap(): Map<String, Any> {
-        val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
         return mapOf(
             "nombre" to nombre,
             "categoria" to categoria,
             "valor" to valor,
-            "fecha" to fecha.format(formatter)
+            "fecha" to fecha
         )
     }
 }

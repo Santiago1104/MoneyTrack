@@ -36,14 +36,8 @@ class MoneyViewModel:ViewModel (){
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val resultado = db.collection("gastos").get().await()
-                if (!resultado.isEmpty) {
-                    val gastos = resultado.documents.mapNotNull { it.toObject(clsExpense::class.java) }
-                    println(gastos)
-                    _listaGastos.postValue(gastos)
-                } else {
-                    // Puedes agregar un log para verificar si los datos están vacíos
-                    println("No se encontraron gastos")
-                }
+                val gastos = resultado.documents.mapNotNull { it.toObject(clsExpense::class.java) }
+                _listaGastos.postValue(gastos)
             } catch (e: Exception) {
                 e.printStackTrace()
             }

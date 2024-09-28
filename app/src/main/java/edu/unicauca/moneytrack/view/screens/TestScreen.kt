@@ -10,12 +10,13 @@ import edu.unicauca.moneytrack.model.clsEntry
 import edu.unicauca.moneytrack.model.clsExpense
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
 
+
 @Composable
 fun TestScreen(moneyViewModel: MoneyViewModel, modifier: Modifier = Modifier) {
     // Observar datos del ViewModel
     val dineroTotal by moneyViewModel.dinero.observeAsState()
-    val listaGastos by moneyViewModel.listaGastos.observeAsState(emptyList())
-    val listaIngresos by moneyViewModel.listaIngresos.observeAsState(emptyList())
+    val listaGastos by moneyViewModel.listaGastos.observeAsState()
+    val listaIngresos by moneyViewModel.listaIngresos.observeAsState()
 
     Column(
         modifier = modifier
@@ -51,6 +52,7 @@ fun TestScreen(moneyViewModel: MoneyViewModel, modifier: Modifier = Modifier) {
             )
             moneyViewModel.agregarGasto(nuevoGasto)
             moneyViewModel.actualizarDineroTotal(-nuevoGasto.valor)
+            moneyViewModel.obtenerGastos()
         }) {
             Text("Añadir Gasto de Prueba")
         }
