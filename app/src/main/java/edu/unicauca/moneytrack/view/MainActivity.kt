@@ -16,6 +16,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import edu.unicauca.moneytrack.view.navigation.BottomNavItem
 import edu.unicauca.moneytrack.view.screens.HomeScreen
+import edu.unicauca.moneytrack.view.screens.TransactionHistoryScreen // Importa la pantalla de historial
 import edu.unicauca.moneytrack.view.screens.TestScreen
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
 
@@ -43,11 +44,13 @@ fun MyApp(moneyViewModel: MoneyViewModel) {
             startDestination = "home",
             modifier = Modifier.padding(innerPadding)
         ) {
-            //Aqui añadir las screens con su respectiva ruta
+            // Aquí añades las screens con su respectiva ruta
             composable("home") { HomeScreen(navController) }
             composable("test") { TestScreen(moneyViewModel = moneyViewModel) }
-            composable("history") { /* Screen de historial */ }
-            composable("profile") { /* Screen de configuraciones */}
+            composable("history") {
+                TransactionHistoryScreen(navController = navController, moneyViewModel = moneyViewModel)
+            }
+            composable("profile") { /* Pantalla del perfil o configuraciones */ }
         }
     }
 }
