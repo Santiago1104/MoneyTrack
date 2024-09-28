@@ -140,17 +140,10 @@ class MoneyViewModel:ViewModel (){
     fun actualizarDineroTotal(cambio: Double) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                // Inicializa dineroActual correctamente
-                val dineroActual = _dinero.value ?: clsMoney(id = "", total = 0.0) // Proporciona un id vacío y un total inicial
-                val nuevoTotal = dineroActual.total + cambio // Actualizamos el total
-
-                // Crear una copia actualizada de clsMoney con el nuevo total
+                val dineroActual = _dinero.value ?: clsMoney(id = "", total = 0.0)
+                val nuevoTotal = dineroActual.total + cambio
                 val dineroActualizado = dineroActual.copy(total = nuevoTotal)
-
-                // Actualizar el documento en Firebase
                 db.collection("dinero").document("total").set(dineroActualizado).await()
-
-                // Actualizar LiveData para notificar a la vista
                 _dinero.postValue(dineroActualizado)
             } catch (e: Exception) {
                 e.printStackTrace()
