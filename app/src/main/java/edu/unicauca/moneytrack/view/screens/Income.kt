@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 
 @Composable
-fun EditarIngresoScreen() {
+fun AddIngresoScreen() {
     var referencia by remember { mutableStateOf(TextFieldValue("")) }
     var valor by remember { mutableStateOf(TextFieldValue("")) }
 
@@ -85,7 +85,7 @@ fun EditarIngresoScreen() {
                     .weight(1f)
                     .height(48.dp),
                 shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFdd5035))
             ) {
                 Text("Eliminar")
             }
@@ -97,7 +97,10 @@ fun EditarIngresoScreen() {
                 modifier = Modifier
                     .weight(1f)
                     .height(48.dp),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2A65D8))
+
+
             ) {
                 Text("Guardar")
             }
@@ -117,5 +120,5 @@ fun BottomNavigationBar() {
 @Preview(showBackground = true)
 @Composable
 fun PreviewEditarIngresoScreen() {
-    EditarIngresoScreen()
+    AddIngresoScreen()
 }
