@@ -1,6 +1,5 @@
-package edu.unicauca.moneytrack.Screens
+package edu.unicauca.moneytrack.view.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -13,12 +12,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.text.font.FontWeight
 
 @Composable
-fun NuevoIngresoScreen() {
+fun EditarIngresoScreen() {
+    // Valores prellenados para editar ingreso
     var referencia by remember { mutableStateOf(TextFieldValue("")) }
     var valor by remember { mutableStateOf(TextFieldValue("")) }
 
@@ -27,32 +25,37 @@ fun NuevoIngresoScreen() {
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Top
     ) {
         Text(
-            text = "Nuevo ingreso",
+            text = "Editar Ingreso",
             style = MaterialTheme.typography.titleLarge,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.padding(top = 24.dp, bottom = 16.dp)
         )
 
         Text(
-            text = "Ingresa los datos asociados al nuevo ingreso.",
+            text = "A continuación, ingresa los datos asociados al nuevo ingreso.",
             fontSize = 16.sp,
             color = Color.Gray,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = 24.dp)
+            modifier = Modifier.padding(top = 24.dp, bottom = 24.dp)
         )
 
-        // Caja de texto para Referencia
-        Box(
+        // Texto para Referencia
+        Card(
+            shape = RoundedCornerShape(12.dp), // Bordes redondeados
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
             modifier = Modifier
-                .background(Color.White, shape = RoundedCornerShape(12.dp))
-                .padding(16.dp)
                 .fillMaxWidth()
+                .padding(16.dp) // Espaciado alrededor de la Card
         ) {
-            Column {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp) // Espaciado interno dentro de la Card
+            ) {
                 TextField(
                     value = referencia,
                     onValueChange = { referencia = it },
@@ -61,7 +64,7 @@ fun NuevoIngresoScreen() {
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(32.dp))
 
                 // Caja de texto para Valor
                 TextField(
@@ -74,25 +77,43 @@ fun NuevoIngresoScreen() {
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
-        // Botón Guardar
-        Button(
-            onClick = { /* Acción para guardar */ },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
-            shape = RoundedCornerShape(8.dp)
+        // Fila con los botones Eliminar y Guardar
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            Text("Guardar")
+            Button(
+                onClick = { /* Acción para eliminar */ },
+                modifier = Modifier
+                    .width(100.dp)
+                    .height(48.dp),
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2A65D8))
+            ) {
+                Text("Eliminar")
+            }
+
+            Button(
+                onClick = { /* Acción para guardar */ },
+                modifier = Modifier
+                    .width(100.dp)
+                    .height(48.dp),
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2A65D8))
+            ) {
+                Text("Guardar")
+            }
         }
     }
 
     Spacer(modifier = Modifier.height(32.dp))
 
     // Barra de navegación inferior
-   // BottomNavigationBar()
+    // BottomNavigationBar()
 }
+
 /*
 @Composable
 fun BottomNavigationBar() {
@@ -101,6 +122,6 @@ fun BottomNavigationBar() {
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewNuevoIngresoScreen() {
-    NuevoIngresoScreen()
+fun PreviewEditarIngresoScreen() {
+    EditarIngresoScreen()
 }

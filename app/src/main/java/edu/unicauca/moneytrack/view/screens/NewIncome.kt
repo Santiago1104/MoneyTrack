@@ -1,6 +1,5 @@
 package edu.unicauca.moneytrack.view.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -16,7 +15,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 
 @Composable
-fun AddIngresoScreen() {
+fun NuevoIngresoScreen() {
     var referencia by remember { mutableStateOf(TextFieldValue("")) }
     var valor by remember { mutableStateOf(TextFieldValue("")) }
 
@@ -25,14 +24,14 @@ fun AddIngresoScreen() {
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Top
     ) {
         Text(
-            text = "Editar Ingreso",
+            text = "Nuevo ingreso",
             style = MaterialTheme.typography.titleLarge,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.padding(top = 24.dp, bottom = 16.dp)
         )
 
         Text(
@@ -40,17 +39,22 @@ fun AddIngresoScreen() {
             fontSize = 16.sp,
             color = Color.Gray,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = 24.dp)
+            modifier = Modifier.padding(top = 24.dp, bottom = 24.dp)
         )
 
-        // Caja de texto para Referencia
-        Box(
+        // Texto para Referencia
+        Card(
+            shape = RoundedCornerShape(12.dp), // Bordes redondeados
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
             modifier = Modifier
-                .background(Color.White, shape = RoundedCornerShape(12.dp))
-                .padding(16.dp)
                 .fillMaxWidth()
+                .padding(16.dp) // Espaciado alrededor de la Card
         ) {
-            Column {
+            Column (
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp) // Espaciado interno dentro de la Card
+            ) {
                 TextField(
                     value = referencia,
                     onValueChange = { referencia = it },
@@ -59,7 +63,7 @@ fun AddIngresoScreen() {
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(32.dp))
 
                 // Caja de texto para Valor
                 TextField(
@@ -72,53 +76,34 @@ fun AddIngresoScreen() {
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
-        // Botones Eliminar y Guardar
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
+        // Botón Guardar
+        Button(
+            onClick = { /* Acción para guardar */ },
+            modifier = Modifier
+                .width(100.dp)
+                .height(48.dp),
+            shape = RoundedCornerShape(8.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2A65D8))
         ) {
-            Button(
-                onClick = { /* Acción para eliminar */ },
-                modifier = Modifier
-                    .weight(1f)
-                    .height(48.dp),
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFdd5035))
-            ) {
-                Text("Eliminar")
-            }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Button(
-                onClick = { /* Acción para guardar */ },
-                modifier = Modifier
-                    .weight(1f)
-                    .height(48.dp),
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2A65D8))
-
-
-            ) {
-                Text("Guardar")
-            }
+            Text("Guardar")
         }
     }
 
     Spacer(modifier = Modifier.height(32.dp))
 
     // Barra de navegación inferior
-    BottomNavigationBar()
+   // BottomNavigationBar()
 }
-
+/*
 @Composable
 fun BottomNavigationBar() {
 }
+*/
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewEditarIngresoScreen() {
-    AddIngresoScreen()
+fun PreviewNuevoIngresoScreen() {
+    NuevoIngresoScreen()
 }
