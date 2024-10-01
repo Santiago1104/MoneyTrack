@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -12,11 +13,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import edu.unicauca.moneytrack.view.navigation.BottomNavItem
+import edu.unicauca.moneytrack.view.screens.AuthorsScreen
+import edu.unicauca.moneytrack.view.screens.EditarIngresoScreen
 import edu.unicauca.moneytrack.view.screens.HomeScreen
+import edu.unicauca.moneytrack.view.screens.NuevoIngresoScreen
 import edu.unicauca.moneytrack.view.screens.TestScreen
+import edu.unicauca.moneytrack.view.screens.TransactionHistoryScreen
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
 
 class MainActivity : ComponentActivity() {
@@ -42,14 +48,23 @@ fun MyApp(moneyViewModel: MoneyViewModel) {
             navController = navController,
             startDestination = "home",
             modifier = Modifier.padding(innerPadding)
-        ) {
-            //Aqui añadir las screens con su respectiva ruta
-            composable("home") { HomeScreen(navController) }
 
-            composable("test") { TestScreen(moneyViewModel = moneyViewModel) }
-            composable("history") { /* Screen de historial */ }
-            composable("profile") { /* Screen de configuraciones */}
+        ){
+            composable("home") {
+                HomeScreen(
+                    viewModel = moneyViewModel,
+                    onAddGastoClick = { navController.navigate("addGasto") },
+                    onAddIngresoClick = { navController.navigate("addIngreso") }
+                )
             }
+            composable("addGasto") { /* Pantalla de agregar gasto */ }
+            composable("addIngreso") { NuevoIngresoScreen() }
+            composable("editGasto") { /* Pantalla de eilimar crear gasto */ }
+            composable("editIngreso") { EditarIngresoScreen() }
+            composable("history") { TransactionHistoryScreen(navController = navController, moneyViewModel = moneyViewModel) }
+            composable("profile") { TestScreen(moneyViewModel = moneyViewModel)}
+            composable("authors") { AuthorsScreen(navController) }
+
         }
     }
 
@@ -61,7 +76,9 @@ fun BottomNavigationBar(navController: NavHostController) {
         BottomNavItem.History,
         BottomNavItem.Profile
     )
-    NavigationBar {
+    NavigationBar(
+        modifier = Modifier.height(58.dp) // Ajusta la altura de la barra de navegación
+    ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
 
@@ -71,7 +88,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                 icon = {
                     Image(
                         painter = painterResource(id = item.icon),
-                        contentDescription = stringResource(id = item.label)
+                        contentDescription = stringResource(id = item.label),
                     )
                 },
                 selected = currentRoute == item.route,
