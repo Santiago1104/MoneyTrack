@@ -45,12 +45,14 @@ fun MyApp(moneyViewModel: MoneyViewModel) {
         ) {
             //Aqui añadir las screens con su respectiva ruta
             composable("home") { HomeScreen(navController) }
+
             composable("test") { TestScreen(moneyViewModel = moneyViewModel) }
             composable("history") { /* Screen de historial */ }
             composable("profile") { /* Screen de configuraciones */}
+            }
         }
     }
-}
+
 
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
