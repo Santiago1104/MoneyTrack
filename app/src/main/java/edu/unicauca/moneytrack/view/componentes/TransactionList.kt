@@ -13,17 +13,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-data class Transaction(
-    val nombre: String,
-    val valor: Double,
-    val fecha: String,
-    val esPositivo: Boolean
-)
+// Sealed class para diferenciar entre ingresos y gastos
+sealed class TransactionData {
+    data class Ingreso(val nombre: String, val valor: Double, val fecha: String) : TransactionData()
+    data class Gasto(val nombre: String, val valor: Double, val fecha: String) : TransactionData()
+}
 
 @Composable
 fun TransactionList(
     title: String,
-    transactions: List<Transaction>
+    transactions: List<TransactionData>
 ) {
     Column(
         modifier = Modifier
@@ -43,13 +42,26 @@ fun TransactionList(
             modifier = Modifier.fillMaxWidth()
         ) {
             items(transactions) { transaction ->
-                TransactionItem(
-                    name = transaction.nombre,
-                    amount = if (transaction.esPositivo) "+${transaction.valor}" else "-${transaction.valor}",
-                    type = if (transaction.esPositivo) "Ingreso" else "Gasto",
-                    date = transaction.fecha,
-                    isPositive = transaction.esPositivo
-                )
+                when (transaction) {
+                    is TransactionData.Ingreso -> {
+                        TransactionItem(
+                            name = transaction.nombre,
+                            amount = "+${transaction.valor}",
+                            type = "Ingreso",
+                            date = transaction.fecha,
+                            isPositive = true
+                        )
+                    }
+                    is TransactionData.Gasto -> {
+                        TransactionItem(
+                            name = transaction.nombre,
+                            amount = "-${transaction.valor}",
+                            type = "Gasto",
+                            date = transaction.fecha,
+                            isPositive = false
+                        )
+                    }
+                }
             }
         }
     }
