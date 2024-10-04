@@ -49,7 +49,7 @@ fun MyApp(moneyViewModel: MoneyViewModel) {
             startDestination = "home",
             modifier = Modifier.padding(innerPadding)
 
-        ){
+        ) {
             composable("home") {
                 HomeScreen(
                     viewModel = moneyViewModel,
@@ -61,13 +61,18 @@ fun MyApp(moneyViewModel: MoneyViewModel) {
             composable("addIngreso") { NuevoIngresoScreen() }
             composable("editGasto") { /* Pantalla de eilimar crear gasto */ }
             composable("editIngreso") { EditarIngresoScreen() }
-            composable("history") { TransactionHistoryScreen(navController = navController, moneyViewModel = moneyViewModel) }
-            composable("profile") { TestScreen(moneyViewModel = moneyViewModel)}
+            composable("history") {
+                TransactionHistoryScreen(
+                    navController = navController,
+                    moneyViewModel = moneyViewModel
+                )
+            }
+            composable("profile") { TestScreen(moneyViewModel = moneyViewModel) }
             composable("authors") { AuthorsScreen(navController) }
 
         }
     }
-
+}
 
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {

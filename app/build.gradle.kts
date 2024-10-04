@@ -68,11 +68,10 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.recyclerview)
-<<<<<<< HEAD
-    implementation(libs.androidx.appcompat)
-=======
     implementation(libs.androidx.navigation.runtime.ktx)
->>>>>>> origin/develop
+    implementation(libs.androidx.appcompat)
+    implementation(libs.firebase.database.ktx)
+
 
     val nav_version = "2.8.0"
 

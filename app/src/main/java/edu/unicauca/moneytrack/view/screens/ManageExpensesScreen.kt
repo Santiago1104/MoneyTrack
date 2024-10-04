@@ -25,7 +25,7 @@ import androidx.navigation.compose.rememberNavController
 import edu.unicauca.moneytrack.model.clsExpense
 
 @Composable
-fun ExpenseManagerScreen(navController: NavController) {
+fun ManageExpensesScream(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -78,7 +78,7 @@ fun ExpenseManagerScreen(navController: NavController) {
 @Composable
 fun PreviewExpenseManagerScreen() {
     val navController = rememberNavController() // Controlador de navegación para preview
-    ExpenseManagerScreen(navController = navController)
+    ManageExpensesScream(navController = navController)
 }
 //pantalla de mis gastos
 @Composable
@@ -102,7 +102,7 @@ fun MisGastosScreen(navController: NavController) {
         }) {
             Text("Volver")
         }
-         //Añadir icono de home
+
     }
 }
 
