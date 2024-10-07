@@ -15,6 +15,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 import edu.unicauca.moneytrack.model.clsEntry
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
 
 @Composable
 fun NuevoIngresoScreen(
@@ -99,13 +101,17 @@ fun NuevoIngresoScreen(
             onClick = {
                 val valorIngreso = valor.text.toDoubleOrNull()
                 if (valorIngreso != null) {
+                    // Obtener la fecha actual en formato personalizado
+                    val formatoFecha = SimpleDateFormat("dd/MM/yyyy")
+                    val fechaActual = formatoFecha.format(Date())
+
                     // Guardar el ingreso si el valor es válido
                     viewModel.agregarIngreso(
                         clsEntry(
                             id = "",
                             nombre = referencia.text,
                             valor = valorIngreso,
-                            fecha = "2024-10-07"
+                            fecha = fechaActual
                         )
                     )
                     onIngresoGuardado() // Navegar después de guardar
