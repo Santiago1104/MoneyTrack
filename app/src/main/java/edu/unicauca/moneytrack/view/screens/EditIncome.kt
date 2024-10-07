@@ -16,9 +16,12 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
 
-
 @Composable
-fun EditarIngresoScreen(ingresoId: String?, viewModel: MoneyViewModel) {
+fun EditarIngresoScreen(
+    ingresoId: String?,
+    viewModel: MoneyViewModel,
+    onIngresoEditado: () -> Unit // Callback para redirigir después de la acción
+) {
     // Obtener el ingreso usando el ingresoId
     val ingreso = viewModel.listaIngresos.observeAsState().value?.find { it.id == ingresoId }
 
@@ -78,7 +81,7 @@ fun EditarIngresoScreen(ingresoId: String?, viewModel: MoneyViewModel) {
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // Campo de texto para Valor
+                // Caja de texto para Valor
                 TextField(
                     value = valor,
                     onValueChange = { valor = it },
@@ -97,7 +100,10 @@ fun EditarIngresoScreen(ingresoId: String?, viewModel: MoneyViewModel) {
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Button(
-                onClick = { viewModel.borrarIngreso(ingreso.id) },
+                onClick = {
+                    viewModel.borrarIngreso(ingreso.id)
+                    onIngresoEditado() // Navegar de vuelta después de eliminar
+                },
                 modifier = Modifier
                     .width(100.dp)
                     .height(48.dp),
@@ -111,9 +117,10 @@ fun EditarIngresoScreen(ingresoId: String?, viewModel: MoneyViewModel) {
                 onClick = {
                     val updatedIngreso = ingreso.copy(
                         nombre = referencia.text,
-                        valor = valor.text.toDoubleOrNull() ?: 0.0
+                        valor = valor.text.toDoubleOrNull() ?: ingreso.valor
                     )
                     viewModel.actualizarIngreso(updatedIngreso)
+                    onIngresoEditado() // Navegar de vuelta después de guardar
                 },
                 modifier = Modifier
                     .width(100.dp)

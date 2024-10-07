@@ -81,7 +81,7 @@ fun NuevoIngresoScreen(
                     isError = errorMensaje != null
                 )
 
-                // Mensaje de error (opcional)
+                // Mensaje de error
                 errorMensaje?.let {
                     Text(
                         text = it,
@@ -105,7 +105,7 @@ fun NuevoIngresoScreen(
                             id = "",
                             nombre = referencia.text,
                             valor = valorIngreso,
-                            fecha = "2024-10-07" // Podrías obtener la fecha actual aquí
+                            fecha = "2024-10-07"
                         )
                     )
                     onIngresoGuardado() // Navegar después de guardar

@@ -66,7 +66,11 @@ fun MyApp(moneyViewModel: MoneyViewModel) {
             composable("editGasto") { /* Pantalla de eilimar crear gasto */ }
             composable("editIngreso/{ingresoId}") { backStackEntry ->
                 val ingresoId = backStackEntry.arguments?.getString("ingresoId")
-                EditarIngresoScreen(ingresoId, moneyViewModel)
+                EditarIngresoScreen(
+                    ingresoId = ingresoId,
+                    viewModel = moneyViewModel,
+                    onIngresoEditado = { navController.popBackStack() } // Volver después de la acción
+                )
             }
             composable("history") { TransactionHistoryScreen(navController = navController, moneyViewModel = moneyViewModel) }
             composable("profile") { TestScreen(moneyViewModel = moneyViewModel)}
