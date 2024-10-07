@@ -15,13 +15,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import edu.unicauca.moneytrack.model.clsExpense
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
-import java.util.UUID
 
 @Composable
-fun AddExpensesScream(navController: NavController) {
-    val viewModel: MoneyViewModel = viewModel() // Obtener el ViewModel
-    var expenseName by remember { mutableStateOf("") }
-    var expenseValue by remember { mutableStateOf("") }
+fun EditExpensesScreen(navController: NavController, expense: clsExpense) {
+    val viewModel: MoneyViewModel = viewModel() // Obteniendo el ViewModel
+
+    var expenseName by remember { mutableStateOf(expense.nombre) }
+    var expenseValue by remember { mutableStateOf(expense.valor.toString()) }
     var errorMessage by remember { mutableStateOf("") }
 
     Column(
@@ -32,12 +32,12 @@ fun AddExpensesScream(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Añadir Gasto",
+            text = "Editar Gasto",
             style = MaterialTheme.typography.headlineLarge,
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
-        // Campo para ingresar el nombre del gasto
+        // Campo para modificar el nombre del gasto
         TextField(
             value = expenseName,
             onValueChange = { expenseName = it },
@@ -47,7 +47,7 @@ fun AddExpensesScream(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Campo para ingresar el valor del gasto
+        // Campo para modificar el valor del gasto
         TextField(
             value = expenseValue,
             onValueChange = { expenseValue = it },
@@ -58,42 +58,47 @@ fun AddExpensesScream(navController: NavController) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Mostrar mensaje de error si los campos no son válidos
+        // Mostrar mensaje de error si hay alguno
         if (errorMessage.isNotEmpty()) {
             Text(text = errorMessage, color = MaterialTheme.colorScheme.error)
         }
 
-        // Botón para guardar el gasto
+        // Botón para guardar los cambios
         Button(
             onClick = {
                 val valorGasto = expenseValue.toDoubleOrNull()
 
                 if (expenseName.isNotBlank() && valorGasto != null) {
-                    // Crear un nuevo gasto
-                    val nuevoGasto = clsExpense(
-                        id = UUID.randomUUID().toString(),
-                        nombre = expenseName,
-                        valor = valorGasto
-                    )
-                    viewModel.agregarGasto(nuevoGasto) // Llamar al ViewModel para agregar el gasto
-                    navController.navigateUp() // Navegar de vuelta a la pantalla anterior
+                    val nuevoGasto = expense.copy(nombre = expenseName, valor = valorGasto)
+                    viewModel.actualizarGasto(nuevoGasto) // Llamando al método de ViewModel
+                    navController.navigate("manager_expenses_screen") // Navegando de vuelta
                 } else {
                     errorMessage = "Por favor ingresa un nombre válido y un valor numérico."
                 }
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Guardar")
+            Text("Guardar Cambios")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Botón para volver a la pantalla anterior
+        // Botón para volver a ManagerExpensesScreen
         Button(
-            onClick = { navController.navigateUp() },
+            onClick = { navController.navigate("manager_expenses_screen") },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Volver")
+            Text("Volver a Manager Expenses")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Botón para volver a Home
+        Button(
+            onClick = { navController.navigate("home_screen") },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Volver al Home")
         }
     }
 }
