@@ -59,7 +59,10 @@ fun MyApp(moneyViewModel: MoneyViewModel) {
                 )
             }
             composable("addGasto") { /* Pantalla de agregar gasto */ }
-            composable("addIngreso") { NuevoIngresoScreen() }
+            composable("addIngreso") { NuevoIngresoScreen(
+                viewModel = moneyViewModel,
+                onIngresoGuardado = { navController.popBackStack() } // Redirige de vuelta después de guardar
+            ) }
             composable("editGasto") { /* Pantalla de eilimar crear gasto */ }
             composable("editIngreso/{ingresoId}") { backStackEntry ->
                 val ingresoId = backStackEntry.arguments?.getString("ingresoId")
