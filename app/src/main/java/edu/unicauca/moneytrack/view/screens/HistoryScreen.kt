@@ -1,5 +1,6 @@
 package edu.unicauca.moneytrack.view.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -73,7 +74,8 @@ fun TransactionHistoryScreen(
                     amount = "+${ingreso.valor}",
                     type = "Ingreso",
                     date = ingreso.fecha,
-                    isPositive = true
+                    isPositive = true,
+                    onClick = { navController.navigate("editIngreso/${ingreso.id}") }
                 )
             }
 
@@ -101,20 +103,30 @@ fun TransactionHistoryScreen(
                     amount = "-${gasto.valor}",
                     type = "Gasto",
                     date = gasto.fecha,
-                    isPositive = false
+                    isPositive = false,
+                    onClick = { navController.navigate("editGasto/${gasto.id}") }
                 )
             }
         }
     }
 }
 
+
 @Composable
-fun TransactionItem(name: String, amount: String, type: String, date: String, isPositive: Boolean) {
+fun TransactionItem(
+    name: String,
+    amount: String,
+    type: String,
+    date: String,
+    isPositive: Boolean,
+    onClick: () -> Unit
+) {
     Card(
         shape = RoundedCornerShape(10.dp),
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
+            .clickable { onClick() }
     ) {
         Column(
             modifier = Modifier.padding(16.dp)

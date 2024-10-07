@@ -33,7 +33,9 @@ import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
 fun HomeScreen(
     viewModel: MoneyViewModel,
     onAddGastoClick: () -> Unit,
-    onAddIngresoClick: () -> Unit
+    onAddIngresoClick: () -> Unit,
+    onEditIncomeClick: (String) -> Unit,
+    onEditGastoClick: (String) -> Unit
 ) {
     val dineroActual by viewModel.dinero.observeAsState(initial = null)
     val ingresos by viewModel.listaIngresos.observeAsState(emptyList())
@@ -91,7 +93,8 @@ fun HomeScreen(
                 amount = "$${it.valor.format(2)}",
                 type = "Ingreso", // Adjust type as needed
                 date = it.fecha,
-                isPositive = true
+                isPositive = true,
+                onClick = { onEditIncomeClick(it.id) }
             )
         }
 
@@ -101,7 +104,8 @@ fun HomeScreen(
                 amount = "$${it.valor.format(2)}",
                 type = "Gasto", // Adjust type as needed
                 date = it.fecha,
-                isPositive = false
+                isPositive = false,
+                onClick = { onEditGastoClick(it.id) }
             )
         }
     }
