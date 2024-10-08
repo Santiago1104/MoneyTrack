@@ -19,13 +19,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import edu.unicauca.moneytrack.R
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
 
@@ -40,6 +40,7 @@ fun HomeScreen(
     val dineroActual by viewModel.dinero.observeAsState(initial = null)
     val ingresos by viewModel.listaIngresos.observeAsState(emptyList())
     val gastos by viewModel.listaGastos.observeAsState(emptyList())
+
     val totalIngresos = ingresos.sumOf { it.valor }
     val totalGastos = gastos.sumOf { it.valor }
 
@@ -49,15 +50,19 @@ fun HomeScreen(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = stringResource(id = R.string.AppTitle), style = MaterialTheme.typography.headlineMedium )
+        Text(text = stringResource(id = R.string.AppTitle), style = MaterialTheme.typography.headlineMedium)
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        CircularProgressIndicatorWithText(
-            ingresos = totalIngresos,
-            gastos = totalGastos,
-            dineroActual = dineroActual?.total ?: 0.0
-        )
+        if (dineroActual != null) {
+            CircularProgressIndicatorWithText(
+                ingresos = totalIngresos,
+                gastos = totalGastos,
+                dineroActual = dineroActual!!.total // Asegúrate de que 'total' sea accesible aquí
+            )
+        } else {
+            Text(text = "Cargando datos de dinero...", style = MaterialTheme.typography.bodyMedium)
+        }
 
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -65,7 +70,6 @@ fun HomeScreen(
             horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier.fillMaxWidth()
         ) {
-
             Button(
                 onClick = onAddIngresoClick,
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2A65D8))
@@ -82,7 +86,11 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Text(text = stringResource(id = R.string.Recents), style = MaterialTheme.typography.headlineSmall, modifier = Modifier.align(Alignment.Start) )
+        Text(
+            text = stringResource(id = R.string.Recents),
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.align(Alignment.Start)
+        )
 
         val latestIngreso = ingresos.maxByOrNull { it.fecha }
         val latestGasto = gastos.maxByOrNull { it.fecha }
@@ -91,22 +99,26 @@ fun HomeScreen(
             TransactionItem(
                 name = it.nombre,
                 amount = "$${it.valor.format(2)}",
-                type = "Ingreso", // Adjust type as needed
+                type = "Ingreso",
                 date = it.fecha,
                 isPositive = true,
                 onClick = { onEditIncomeClick(it.id) }
             )
+        } ?: run {
+            Text(text = "No hay ingresos recientes", style = MaterialTheme.typography.bodyMedium)
         }
 
         latestGasto?.let {
             TransactionItem(
                 name = it.nombre,
                 amount = "$${it.valor.format(2)}",
-                type = "Gasto", // Adjust type as needed
+                type = "Gasto",
                 date = it.fecha,
                 isPositive = false,
                 onClick = { onEditGastoClick(it.id) }
             )
+        } ?: run {
+            Text(text = "No hay gastos recientes", style = MaterialTheme.typography.bodyMedium)
         }
     }
 }
@@ -151,7 +163,7 @@ fun CircularProgressIndicatorWithText(
         }
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "$${dineroActual.format(2)}", style = MaterialTheme.typography.headlineMedium )
+            Text(text = "$${dineroActual.format(2)}", style = MaterialTheme.typography.headlineMedium)
             Text(text = stringResource(id = R.string.CurrentMoney), style = MaterialTheme.typography.bodyMedium)
         }
     }
@@ -176,7 +188,7 @@ fun CircularProgressIndicatorWithText(
             Text(text = stringResource(id = R.string.Expenses), style = MaterialTheme.typography.bodyMedium)
         }
     }
-
 }
 
+// Función para formatear números
 fun Double.format(digits: Int) = "%.${digits}f".format(this)
