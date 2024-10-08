@@ -71,6 +71,7 @@ dependencies {
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.firebase.database.ktx)
+    implementation(libs.androidx.room.runtime.android)
 
 
     val nav_version = "2.8.0"

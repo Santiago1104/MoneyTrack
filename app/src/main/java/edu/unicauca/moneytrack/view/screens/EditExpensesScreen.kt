@@ -17,8 +17,8 @@ import edu.unicauca.moneytrack.model.clsExpense
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
 
 @Composable
-fun EditExpensesScreen(navController: NavController, expense: clsExpense) {
-    val viewModel: MoneyViewModel = viewModel() // Obteniendo el ViewModel
+fun EditExpensesScreen(navController: NavController, expense: clsExpense, expenseId: String?) {
+    val viewModel: MoneyViewModel = viewModel() // Obtener el ViewModel
 
     var expenseName by remember { mutableStateOf(expense.nombre) }
     var expenseValue by remember { mutableStateOf(expense.valor.toString()) }
@@ -70,8 +70,10 @@ fun EditExpensesScreen(navController: NavController, expense: clsExpense) {
 
                 if (expenseName.isNotBlank() && valorGasto != null) {
                     val nuevoGasto = expense.copy(nombre = expenseName, valor = valorGasto)
-                    viewModel.actualizarGasto(nuevoGasto) // Llamando al método de ViewModel
-                    navController.navigate("manager_expenses_screen") // Navegando de vuelta
+                    if (expenseId != null) {
+                        viewModel.actualizarGasto(nuevoGasto) // Llamando al método de ViewModel
+                    }
+                    navController.navigate("adminGastos") // Navegando de vuelta a la pantalla de administración de gastos
                 } else {
                     errorMessage = "Por favor ingresa un nombre válido y un valor numérico."
                 }
@@ -83,19 +85,19 @@ fun EditExpensesScreen(navController: NavController, expense: clsExpense) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Botón para volver a ManagerExpensesScreen
+        // Botón para volver a ManageExpensesScreen
         Button(
-            onClick = { navController.navigate("manager_expenses_screen") },
+            onClick = { navController.navigate("adminGastos") },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Volver a Manager Expenses")
+            Text("Volver a Administrar Gastos")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         // Botón para volver a Home
         Button(
-            onClick = { navController.navigate("home_screen") },
+            onClick = { navController.navigate("home") },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Volver al Home")

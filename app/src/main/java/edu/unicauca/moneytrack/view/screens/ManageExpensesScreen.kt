@@ -25,7 +25,7 @@ import androidx.navigation.compose.rememberNavController
 import edu.unicauca.moneytrack.model.clsExpense
 
 @Composable
-fun ManageExpensesScream(navController: NavController) {
+fun ManageExpensesScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -78,7 +78,7 @@ fun ManageExpensesScream(navController: NavController) {
 @Composable
 fun PreviewExpenseManagerScreen() {
     val navController = rememberNavController() // Controlador de navegación para preview
-    ManageExpensesScream(navController = navController)
+    ManageExpensesScreen(navController = navController)
 }
 //pantalla de mis gastos
 @Composable

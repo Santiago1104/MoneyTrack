@@ -1,23 +1,13 @@
 {
   "project_info": {
-<<<<<<< HEAD
-    "project_number": "705728273218",
-    "project_id": "moneytrackbd-f7f32",
-    "storage_bucket": "moneytrackbd-f7f32.appspot.com"
-=======
     "project_number": "740459051942",
     "project_id": "moneytrackbd",
     "storage_bucket": "moneytrackbd.appspot.com"
->>>>>>> origin/develop
   },
   "client": [
     {
       "client_info": {
-<<<<<<< HEAD
-        "mobilesdk_app_id": "1:705728273218:android:6fd1414b56b895115486db",
-=======
         "mobilesdk_app_id": "1:740459051942:android:59356670d2439dec05ad67",
->>>>>>> origin/develop
         "android_client_info": {
           "package_name": "edu.unicauca.moneytrack"
         }
@@ -25,11 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-<<<<<<< HEAD
-          "current_key": "AIzaSyDG8HuyKx1y6IkiQKzmP_5_05l9icNM0dc"
-=======
           "current_key": "AIzaSyBBBRxsWLYxx18lKs3NLGM-zF61HhbSm8M"
->>>>>>> origin/develop
         }
       ],
       "services": {

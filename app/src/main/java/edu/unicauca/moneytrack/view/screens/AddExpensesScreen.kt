@@ -18,7 +18,7 @@ import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
 import java.util.UUID
 
 @Composable
-fun AddExpensesScream(navController: NavController) {
+fun AddExpensesScreen(navController: NavController) {
     val viewModel: MoneyViewModel = viewModel() // Obtener el ViewModel
     var expenseName by remember { mutableStateOf("") }
     var expenseValue by remember { mutableStateOf("") }
@@ -76,6 +76,8 @@ fun AddExpensesScream(navController: NavController) {
                         valor = valorGasto
                     )
                     viewModel.agregarGasto(nuevoGasto) // Llamar al ViewModel para agregar el gasto
+                    expenseName = "" // Limpiar el campo de nombre
+                    expenseValue = "" // Limpiar el campo de valor
                     navController.navigateUp() // Navegar de vuelta a la pantalla anterior
                 } else {
                     errorMessage = "Por favor ingresa un nombre válido y un valor numérico."
