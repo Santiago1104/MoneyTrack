@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -13,12 +14,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
+import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
 
 @Composable
-fun EditarIngresoScreen() {
-    // Valores prellenados para editar ingreso
-    var referencia by remember { mutableStateOf(TextFieldValue("")) }
-    var valor by remember { mutableStateOf(TextFieldValue("")) }
+fun EditarIngresoScreen(
+    ingresoId: String?,
+    viewModel: MoneyViewModel,
+    onIngresoEditado: () -> Unit // Callback para redirigir después de la acción
+) {
+    // Obtener el ingreso usando el ingresoId
+    val ingreso = viewModel.listaIngresos.observeAsState().value?.find { it.id == ingresoId }
+
+    // Si el ingreso es nulo, no mostrar la pantalla
+    if (ingreso == null) {
+        Text("Cargando ingreso...")
+        return
+    }
+
+    // Prellenar los campos con los datos actuales del ingreso
+    var referencia by remember { mutableStateOf(TextFieldValue(ingreso.nombre)) }
+    var valor by remember { mutableStateOf(TextFieldValue(ingreso.valor.toString())) }
 
     Column(
         modifier = Modifier
@@ -43,18 +58,18 @@ fun EditarIngresoScreen() {
             modifier = Modifier.padding(top = 24.dp, bottom = 24.dp)
         )
 
-        // Texto para Referencia
+        // Campo de texto para Referencia
         Card(
-            shape = RoundedCornerShape(12.dp), // Bordes redondeados
+            shape = RoundedCornerShape(12.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp) // Espaciado alrededor de la Card
+                .padding(16.dp)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp) // Espaciado interno dentro de la Card
+                    .padding(16.dp)
             ) {
                 TextField(
                     value = referencia,
@@ -79,13 +94,16 @@ fun EditarIngresoScreen() {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Fila con los botones Eliminar y Guardar
+        // Fila de botones
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Button(
-                onClick = { /* Acción para eliminar */ },
+                onClick = {
+                    viewModel.borrarIngreso(ingreso.id)
+                    onIngresoEditado() // Navegar de vuelta después de eliminar
+                },
                 modifier = Modifier
                     .width(100.dp)
                     .height(48.dp),
@@ -96,7 +114,14 @@ fun EditarIngresoScreen() {
             }
 
             Button(
-                onClick = { /* Acción para guardar */ },
+                onClick = {
+                    val updatedIngreso = ingreso.copy(
+                        nombre = referencia.text,
+                        valor = valor.text.toDoubleOrNull() ?: ingreso.valor
+                    )
+                    viewModel.actualizarIngreso(updatedIngreso)
+                    onIngresoEditado() // Navegar de vuelta después de guardar
+                },
                 modifier = Modifier
                     .width(100.dp)
                     .height(48.dp),
@@ -109,19 +134,4 @@ fun EditarIngresoScreen() {
     }
 
     Spacer(modifier = Modifier.height(32.dp))
-
-    // Barra de navegación inferior
-    // BottomNavigationBar()
-}
-
-/*
-@Composable
-fun BottomNavigationBar() {
-}
-*/
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewEditarIngresoScreen() {
-    EditarIngresoScreen()
 }
