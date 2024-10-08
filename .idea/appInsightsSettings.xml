@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="edu.unicauca.moneytrack" />
+                  <option name="mobileSdkAppId" value="1:740459051942:android:59356670d2439dec05ad67" />
+                  <option name="projectId" value="moneytrackbd" />
+                  <option name="projectNumber" value="740459051942" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
