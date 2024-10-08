@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
-
 @Composable
 fun TransactionHistoryScreen(
     navController: NavController,
@@ -30,6 +29,10 @@ fun TransactionHistoryScreen(
     // Obteniendo las listas de ingresos y gastos del ViewModel
     val ingresos by moneyViewModel.listaIngresos.observeAsState(emptyList())
     val gastos by moneyViewModel.listaGastos.observeAsState(emptyList())
+
+    // Combinando ingresos y gastos en una sola lista y ordenando por fecha
+    val transacciones = (ingresos.map { it to "Ingreso" } + gastos.map { it to "Gasto" })
+        .sortedByDescending { it.first.fecha }  // Ordenar por fecha descendente
 
     Column(
         modifier = Modifier
@@ -47,7 +50,7 @@ fun TransactionHistoryScreen(
         )
 
         Text(
-            text = "A continuación, se presentan los gastos e ingresos históricos.",
+            text = "A continuación, se presentan los movimientos históricos.",
             fontSize = 14.sp,
             color = Color.Gray,
             modifier = Modifier.padding(bottom = 16.dp)
@@ -57,54 +60,23 @@ fun TransactionHistoryScreen(
         LazyColumn(
             modifier = Modifier.fillMaxWidth()
         ) {
-            // Sección de ingresos
-            item {
-                Text(
-                    text = "Ingresos",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                )
-            }
-            items(ingresos) { ingreso ->
-                TransactionItem(
-                    name = ingreso.nombre,
-                    amount = "+${ingreso.valor}",
-                    type = "Ingreso",
-                    date = ingreso.fecha,
-                    isPositive = true,
-                    onClick = { navController.navigate("editIngreso/${ingreso.id}") }
-                )
-            }
+            items(transacciones) { (transaccion, tipo) ->
+                val isPositive = tipo == "Ingreso"
+                val amountSign = if (isPositive) "+" else "-"
 
-            // Divisor entre ingresos y gastos
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-                Divider(color = Color.Gray, thickness = 1.dp)
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-
-            // Sección de gastos
-            item {
-                Text(
-                    text = "Gastos",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                )
-            }
-            items(gastos) { gasto ->
                 TransactionItem(
-                    name = gasto.nombre,
-                    amount = "-${gasto.valor}",
-                    type = "Gasto",
-                    date = gasto.fecha,
-                    isPositive = false,
-                    onClick = { navController.navigate("editGasto/${gasto.id}") }
+                    name = transaccion.nombre,
+                    amount = "$amountSign${transaccion.valor}",
+                    type = tipo,
+                    date = transaccion.fecha,
+                    isPositive = isPositive,
+                    onClick = {
+                        if (isPositive) {
+                            navController.navigate("editIngreso/${transaccion.id}")
+                        } else {
+                            navController.navigate("editGasto/${transaccion.id}")
+                        }
+                    }
                 )
             }
         }

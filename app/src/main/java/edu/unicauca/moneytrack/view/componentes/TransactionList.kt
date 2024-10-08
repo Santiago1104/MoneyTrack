@@ -42,6 +42,7 @@ fun TransactionList(
             modifier = Modifier.fillMaxWidth()
         ) {
             items(transactions) { transaction ->
+                // Diferenciar entre ingreso y gasto
                 when (transaction) {
                     is TransactionData.Ingreso -> {
                         TransactionItem(
@@ -91,7 +92,7 @@ fun TransactionItem(name: String, amount: String, type: String, date: String, is
                         text = amount,
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
-                        color = if (isPositive) Color(0xFF00C853) else Color(0xFFD50000) // Verde o rojo según el valor
+                        color = if (isPositive) Color(0xFF00C853) else Color(0xFFD50000) // Verde para ingresos, rojo para gastos
                     )
                     Text(text = date, color = Color.Gray, fontSize = 14.sp)
                 }
