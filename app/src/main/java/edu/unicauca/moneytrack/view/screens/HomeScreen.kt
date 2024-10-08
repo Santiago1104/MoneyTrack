@@ -117,9 +117,9 @@ fun HomeScreen(
             }
             Button(
                 onClick = { showDialog = true },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF39C9CD))
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))
             ) {
-                Text("Mostrar Consejos", color = Color.White)
+                Text("Consejos", color = Color.White)
             }
         }
 
