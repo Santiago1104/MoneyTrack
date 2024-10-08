@@ -1,5 +1,6 @@
 package edu.unicauca.moneytrack.view.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,12 +22,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
 
-// Sealed class para identificar si es ingreso o gasto
-sealed class TransactionItemData {
-    data class Ingreso(val nombre: String, val valor: String, val fecha: String) : TransactionItemData()
-    data class Gasto(val nombre: String, val valor: String, val fecha: String) : TransactionItemData()
-}
-
 @Composable
 fun TransactionHistoryScreen(
     navController: NavController,
@@ -35,13 +30,6 @@ fun TransactionHistoryScreen(
     // Obteniendo las listas de ingresos y gastos del ViewModel
     val ingresos by moneyViewModel.listaIngresos.observeAsState(emptyList())
     val gastos by moneyViewModel.listaGastos.observeAsState(emptyList())
-
-    // Crear una lista combinada de ingresos y gastos
-    val transactionItems: List<TransactionItemData> = ingresos.map {
-        TransactionItemData.Ingreso(it.nombre, it.valor.toString(), it.fecha)
-    } + gastos.map {
-        TransactionItemData.Gasto(it.nombre, it.valor.toString(), it.fecha)
-    }
 
     Column(
         modifier = Modifier
@@ -65,43 +53,80 @@ fun TransactionHistoryScreen(
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        // Lista combinada de ingresos y gastos
+        // LazyColumn combinada para Ingresos y Gastos
         LazyColumn(
             modifier = Modifier.fillMaxWidth()
         ) {
-            items(transactionItems) { item ->
-                when (item) {
-                    is TransactionItemData.Ingreso -> {
-                        TransactionItem(
-                            name = item.nombre,
-                            amount = "+${item.valor}",
-                            type = "Ingreso",
-                            date = item.fecha,
-                            isPositive = true
-                        )
-                    }
-                    is TransactionItemData.Gasto -> {
-                        TransactionItem(
-                            name = item.nombre,
-                            amount = "-${item.valor}",
-                            type = "Gasto",
-                            date = item.fecha,
-                            isPositive = false
-                        )
-                    }
-                }
+            // Sección de ingresos
+            item {
+                Text(
+                    text = "Ingresos",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                )
+            }
+            items(ingresos) { ingreso ->
+                TransactionItem(
+                    name = ingreso.nombre,
+                    amount = "+${ingreso.valor}",
+                    type = "Ingreso",
+                    date = ingreso.fecha,
+                    isPositive = true,
+                    onClick = { navController.navigate("editIngreso/${ingreso.id}") }
+                )
+            }
+
+            // Divisor entre ingresos y gastos
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+                Divider(color = Color.Gray, thickness = 1.dp)
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            // Sección de gastos
+            item {
+                Text(
+                    text = "Gastos",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                )
+            }
+            items(gastos) { gasto ->
+                TransactionItem(
+                    name = gasto.nombre,
+                    amount = "-${gasto.valor}",
+                    type = "Gasto",
+                    date = gasto.fecha,
+                    isPositive = false,
+                    onClick = { navController.navigate("editGasto/${gasto.id}") }
+                )
             }
         }
     }
 }
 
+
 @Composable
-fun TransactionItem(name: String, amount: String, type: String, date: String, isPositive: Boolean) {
+fun TransactionItem(
+    name: String,
+    amount: String,
+    type: String,
+    date: String,
+    isPositive: Boolean,
+    onClick: () -> Unit
+) {
     Card(
         shape = RoundedCornerShape(10.dp),
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
+            .clickable { onClick() }
     ) {
         Column(
             modifier = Modifier.padding(16.dp)

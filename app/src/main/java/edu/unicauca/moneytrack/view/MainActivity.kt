@@ -54,13 +54,25 @@ fun MyApp(moneyViewModel: MoneyViewModel) {
                 HomeScreen(
                     viewModel = moneyViewModel,
                     onAddGastoClick = { navController.navigate("addGasto") },
-                    onAddIngresoClick = { navController.navigate("addIngreso") }
+                    onAddIngresoClick = { navController.navigate("addIngreso") },
+                    onEditIncomeClick = { id -> navController.navigate("editIngreso/$id") },
+                    onEditGastoClick = { id -> navController.navigate("editGasto/$id") }
                 )
             }
             composable("addGasto") { /* Pantalla de agregar gasto */ }
-            composable("addIngreso") { NuevoIngresoScreen() }
+            composable("addIngreso") { NuevoIngresoScreen(
+                viewModel = moneyViewModel,
+                onIngresoGuardado = { navController.popBackStack() } // Redirige de vuelta después de guardar
+            ) }
             composable("editGasto") { /* Pantalla de eilimar crear gasto */ }
-            composable("editIngreso") { EditarIngresoScreen() }
+            composable("editIngreso/{ingresoId}") { backStackEntry ->
+                val ingresoId = backStackEntry.arguments?.getString("ingresoId")
+                EditarIngresoScreen(
+                    ingresoId = ingresoId,
+                    viewModel = moneyViewModel,
+                    onIngresoEditado = { navController.popBackStack() } // Volver después de la acción
+                )
+            }
             composable("history") { TransactionHistoryScreen(navController = navController, moneyViewModel = moneyViewModel) }
             composable("profile") { TestScreen(moneyViewModel = moneyViewModel)}
             composable("authors") { AuthorsScreen(navController) }
