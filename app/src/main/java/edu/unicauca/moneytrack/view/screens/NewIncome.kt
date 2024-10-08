@@ -13,11 +13,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
+import edu.unicauca.moneytrack.model.clsEntry
+import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
 
 @Composable
-fun NuevoIngresoScreen() {
+fun NuevoIngresoScreen(
+    viewModel: MoneyViewModel,
+    onIngresoGuardado: () -> Unit // Callback para navegar después de guardar
+) {
     var referencia by remember { mutableStateOf(TextFieldValue("")) }
     var valor by remember { mutableStateOf(TextFieldValue("")) }
+    var errorMensaje by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
@@ -44,16 +52,16 @@ fun NuevoIngresoScreen() {
 
         // Texto para Referencia
         Card(
-            shape = RoundedCornerShape(12.dp), // Bordes redondeados
+            shape = RoundedCornerShape(12.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp) // Espaciado alrededor de la Card
+                .padding(16.dp)
         ) {
-            Column (
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp) // Espaciado interno dentro de la Card
+                    .padding(16.dp)
             ) {
                 TextField(
                     value = referencia,
@@ -71,8 +79,18 @@ fun NuevoIngresoScreen() {
                     onValueChange = { valor = it },
                     label = { Text("Valor") },
                     placeholder = { Text("$ 0.00") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = errorMensaje != null
                 )
+
+                // Mensaje de error
+                errorMensaje?.let {
+                    Text(
+                        text = it,
+                        color = Color.Red,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
             }
         }
 
@@ -80,7 +98,27 @@ fun NuevoIngresoScreen() {
 
         // Botón Guardar
         Button(
-            onClick = { /* Acción para guardar */ },
+            onClick = {
+                val valorIngreso = valor.text.toDoubleOrNull()
+                if (valorIngreso != null) {
+                    // Obtener la fecha actual en formato personalizado
+                    val formatoFecha = SimpleDateFormat("dd/MM/yyyy")
+                    val fechaActual = formatoFecha.format(Date())
+
+                    // Guardar el ingreso si el valor es válido
+                    viewModel.agregarIngreso(
+                        clsEntry(
+                            id = "",
+                            nombre = referencia.text,
+                            valor = valorIngreso,
+                            fecha = fechaActual
+                        )
+                    )
+                    onIngresoGuardado() // Navegar después de guardar
+                } else {
+                    errorMensaje = "Por favor, ingrese un valor válido"
+                }
+            },
             modifier = Modifier
                 .width(100.dp)
                 .height(48.dp),
@@ -92,18 +130,4 @@ fun NuevoIngresoScreen() {
     }
 
     Spacer(modifier = Modifier.height(32.dp))
-
-    // Barra de navegación inferior
-   // BottomNavigationBar()
-}
-/*
-@Composable
-fun BottomNavigationBar() {
-}
-*/
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewNuevoIngresoScreen() {
-    NuevoIngresoScreen()
 }
