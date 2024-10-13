@@ -67,9 +67,8 @@ fun MyApp(moneyViewModel: MoneyViewModel) {
             ) }
             composable("editGasto/{expenseId}") { backStackEntry ->
                 val expenseId = backStackEntry.arguments?.getString("expenseId")
-                val expense = moneyViewModel.getExpenseById(expenseId)
-                if (expense != null) {
-                    EditExpensesScreen(navController = navController, expense = expense, expenseId = expenseId)
+                if (expenseId != null) {
+                    EditExpensesScreen(navController = navController, expenseId = expenseId) // Pasando el ID
                 }
             }
             composable("editIngreso/{ingresoId}") { backStackEntry ->

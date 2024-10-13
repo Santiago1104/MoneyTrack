@@ -19,13 +19,12 @@ import java.util.UUID
 @Composable
 fun AddExpensesScreen(
     navController: NavController,
-    referencia: String? = null, // Recibe la referencia desde otra pantalla
+    moneyViewModel: MoneyViewModel = viewModel()
 ) {
-    // Inicializa el ViewModel
-    val moneyViewModel: MoneyViewModel = viewModel() // Asegúrate de que MoneyViewModel esté bien definido
+    // Obtener la referencia del ViewModel compartido
+    val reference = moneyViewModel.referencia ?: "" // Si no hay referencia, usar una cadena vacía
 
     // Variables de estado para los campos
-    var reference by remember { mutableStateOf(referencia ?: "") } // Inicializa con referencia si se proporciona
     var expenseName by remember { mutableStateOf("") }
     var expenseValue by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf("") }
@@ -51,9 +50,10 @@ fun AddExpensesScreen(
         // Campo de referencia (puede estar prellenado)
         TextField(
             value = reference,
-            onValueChange = { reference = it }, // Permite cambiar la referencia
+            onValueChange = { /* La referencia se obtiene del ViewModel, no se puede modificar aquí */ },
             label = { Text("Referencia del Gasto") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = false // Deshabilitar el campo si no se puede modificar
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -131,12 +131,11 @@ fun AddExpensesScreen(
                         id = UUID.randomUUID().toString(),
                         nombre = expenseName,
                         valor = valorGasto,
-                        referencia = reference, // Usar la referencia
+                        //referencia = reference, // Usar la referencia no logro pasar ña referencia
                         categoria = nuevaCategoria // Usar la categoría seleccionada
                     )
-                    moneyViewModel.agregarGasto(nuevoGasto) // Llama al ViewModel para agregar el gasto
+                    moneyViewModel.agregarGasto(nuevoGasto) // Llamar al ViewModel para agregar el gasto
                     // Limpiar campos
-                    reference = ""
                     expenseName = ""
                     expenseValue = ""
                     selectedCategory = ""

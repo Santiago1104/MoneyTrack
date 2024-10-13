@@ -1,5 +1,8 @@
 package edu.unicauca.moneytrack.viewmodel
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -25,6 +28,7 @@ class MoneyViewModel:ViewModel (){
 
     private var _dinero = MutableLiveData<clsMoney?>()
     val dinero: MutableLiveData<clsMoney?> = _dinero
+    var referencia: String? by mutableStateOf(null)
 
     init {
         obtenerGastos()
@@ -43,10 +47,23 @@ class MoneyViewModel:ViewModel (){
             }
         }
     }
-    //obtener el id del gasto
-    fun getExpenseById(expenseId: String?): clsExpense? {
-        return _listaGastos.value?.find { it.id == expenseId }
+    // Obtener el gasto por ID, devolviendo LiveData
+    fun getExpenseByIdLive(expenseId: String): LiveData<clsExpense?> {
+        val expenseLiveData = MutableLiveData<clsExpense?>()
+
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val expense = _listaGastos.value?.find { it.id == expenseId }
+                expenseLiveData.postValue(expense)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                expenseLiveData.postValue(null) // En caso de error, devolver null
+            }
+        }
+
+        return expenseLiveData
     }
+
 
     fun agregarGasto(expense: clsExpense){
         expense.id = UUID.randomUUID().toString()

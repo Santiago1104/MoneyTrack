@@ -18,14 +18,25 @@ import edu.unicauca.moneytrack.model.clsExpense
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
 
 @Composable
-fun EditExpensesScreen(navController: NavController,
-                       moneyViewModel: MoneyViewModel = viewModel()) {
-    val viewModel: MoneyViewModel = viewModel() // Obtener el ViewModel
+fun EditExpensesScreen(
+    navController: NavController,
+    moneyViewModel: MoneyViewModel = viewModel(),
+    expenseId: String // Necesitamos el ID del gasto a editar
+) {
+    val expense by moneyViewModel.getExpenseByIdLive(expenseId).observeAsState()
 
-    var expenseName by remember { mutableStateOf(moneyViewModel.listaGastos) }
-    var expenseValue by remember { mutableStateOf(moneyViewModel.listaGastos.value)}
+    // Si no se encuentra el gasto, podemos mostrar un mensaje o regresar
+    if (expense == null) {
+        Text("Gasto no encontrado.")
+        return
+    }
+
+    // Variables de estado para los campos editables
+    var expenseName by remember { mutableStateOf(expense?.nombre ?: "") }
+    var expenseValue by remember { mutableStateOf(expense?.valor?.toString() ?: "") }
+    //var expenseReference by remember { mutableStateOf(expense?.referencia ?: "") }
+    var selectedCategory by remember { mutableStateOf(expense?.categoria ?: "") }
     var errorMessage by remember { mutableStateOf("") }
-
 
     Column(
         modifier = Modifier
@@ -59,6 +70,26 @@ fun EditExpensesScreen(navController: NavController,
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
         )
 
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Campo para modificar la referencia del gasto
+        /*TextField(
+            value = expenseReference,
+            onValueChange = { expenseReference = it },
+            label = { Text("Referencia del Gasto") },
+            modifier = Modifier.fillMaxWidth()
+        )*/
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Campo para modificar la categoría del gasto
+        TextField(
+            value = selectedCategory,
+            onValueChange = { selectedCategory = it },
+            label = { Text("Categoría del Gasto") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
         Spacer(modifier = Modifier.height(32.dp))
 
         // Mostrar mensaje de error si hay alguno
@@ -71,14 +102,17 @@ fun EditExpensesScreen(navController: NavController,
             onClick = {
                 val valorGasto = expenseValue.toDoubleOrNull()
 
-                if (expenseName.isNotBlank() && valorGasto != null) {
-                    val nuevoGasto = expense.copy(nombre = expenseName, valor = valorGasto)
-                    if (expenseId != null) {
-                        viewModel.actualizarGasto(nuevoGasto) // Llamando al método de ViewModel
-                    }
+                if (expenseName.isNotBlank() && valorGasto != null && selectedCategory.isNotBlank()) {
+                    val nuevoGasto = expense!!.copy(
+                        nombre = expenseName,
+                        valor = valorGasto,
+                //        referencia = expenseReference,
+                        categoria = selectedCategory
+                    )
+                    moneyViewModel.actualizarGasto(nuevoGasto) // Llamando al método de ViewModel
                     navController.navigate("adminGastos") // Navegando de vuelta a la pantalla de administración de gastos
                 } else {
-                    errorMessage = "Por favor ingresa un nombre válido y un valor numérico."
+                    errorMessage = "Por favor ingresa un nombre válido, un valor numérico y una categoría."
                 }
             },
             modifier = Modifier.fillMaxWidth()
@@ -88,7 +122,20 @@ fun EditExpensesScreen(navController: NavController,
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Botón para volver a ManageExpensesScreen
+        // Botón para eliminar el gasto
+        Button(
+            onClick = {
+                moneyViewModel.borrarGasto(expense!!.id) // Eliminar el gasto usando el ViewModel
+                navController.navigate("adminGastos") // Regresar a la pantalla de administración de gastos
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Eliminar Gasto")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Botón para volver a la pantalla anterior
         Button(
             onClick = { navController.navigate("adminGastos") },
             modifier = Modifier.fillMaxWidth()
@@ -98,7 +145,7 @@ fun EditExpensesScreen(navController: NavController,
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Botón para volver a Home
+        // Botón para volver al Home
         Button(
             onClick = { navController.navigate("home") },
             modifier = Modifier.fillMaxWidth()
