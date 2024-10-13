@@ -9,9 +9,9 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="edu.unicauca.moneytrack" />
-                  <option name="mobileSdkAppId" value="1:740459051942:android:59356670d2439dec05ad67" />
-                  <option name="projectId" value="moneytrackbd" />
-                  <option name="projectNumber" value="740459051942" />
+                  <option name="mobileSdkAppId" value="1:705728273218:android:f6982d319559192d5486db" />
+                  <option name="projectId" value="moneytrackbd-f7f32" />
+                  <option name="projectNumber" value="705728273218" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

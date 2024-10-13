@@ -17,7 +17,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import edu.unicauca.moneytrack.view.navigation.BottomNavItem
+import edu.unicauca.moneytrack.view.screens.AddExpensesScreen
 import edu.unicauca.moneytrack.view.screens.AuthorsScreen
+import edu.unicauca.moneytrack.view.screens.EditExpensesScreen
 import edu.unicauca.moneytrack.view.screens.EditarIngresoScreen
 import edu.unicauca.moneytrack.view.screens.HomeScreen
 import edu.unicauca.moneytrack.view.screens.NuevoIngresoScreen
@@ -58,12 +60,18 @@ fun MyApp(moneyViewModel: MoneyViewModel) {
                     onEditGastoClick = { id -> navController.navigate("editGasto/$id") }
                 )
             }
-            composable("addGasto") { /* Pantalla de agregar gasto */ }
+            composable("addGasto") { AddExpensesScreen(navController = navController) }
             composable("addIngreso") { NuevoIngresoScreen(
                 viewModel = moneyViewModel,
                 onIngresoGuardado = { navController.popBackStack() } // Redirige de vuelta después de guardar
             ) }
-            composable("editGasto") { /* Pantalla de eilimar crear gasto */ }
+            composable("editGasto/{expenseId}") { backStackEntry ->
+                val expenseId = backStackEntry.arguments?.getString("expenseId")
+                val expense = moneyViewModel.getExpenseById(expenseId)
+                if (expense != null) {
+                    EditExpensesScreen(navController = navController, expense = expense, expenseId = expenseId)
+                }
+            }
             composable("editIngreso/{ingresoId}") { backStackEntry ->
                 val ingresoId = backStackEntry.arguments?.getString("ingresoId")
                 EditarIngresoScreen(

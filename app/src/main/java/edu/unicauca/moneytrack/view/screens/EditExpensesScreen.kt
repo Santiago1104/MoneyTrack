@@ -7,6 +7,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -17,12 +18,14 @@ import edu.unicauca.moneytrack.model.clsExpense
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
 
 @Composable
-fun EditExpensesScreen(navController: NavController, expense: clsExpense, expenseId: String?) {
+fun EditExpensesScreen(navController: NavController,
+                       moneyViewModel: MoneyViewModel = viewModel()) {
     val viewModel: MoneyViewModel = viewModel() // Obtener el ViewModel
 
-    var expenseName by remember { mutableStateOf(expense.nombre) }
-    var expenseValue by remember { mutableStateOf(expense.valor.toString()) }
+    var expenseName by remember { mutableStateOf(moneyViewModel.listaGastos) }
+    var expenseValue by remember { mutableStateOf(moneyViewModel.listaGastos.value)}
     var errorMessage by remember { mutableStateOf("") }
+
 
     Column(
         modifier = Modifier

@@ -43,6 +43,11 @@ class MoneyViewModel:ViewModel (){
             }
         }
     }
+    //obtener el id del gasto
+    fun getExpenseById(expenseId: String?): clsExpense? {
+        return _listaGastos.value?.find { it.id == expenseId }
+    }
+
     fun agregarGasto(expense: clsExpense){
         expense.id = UUID.randomUUID().toString()
         viewModelScope.launch(Dispatchers.IO){
