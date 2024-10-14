@@ -74,7 +74,7 @@ fun MyApp(moneyViewModel: MoneyViewModel) {
                 )
             }
             composable("history") { TransactionHistoryScreen(navController = navController, moneyViewModel = moneyViewModel) }
-            composable("profile") { TestScreen(moneyViewModel = moneyViewModel)}
+            composable("profile") { ProfileScreen(navController = navController) }
             composable("authors") { AuthorsScreen(navController) }
         }
     }
