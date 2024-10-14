@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import edu.unicauca.moneytrack.R
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
@@ -50,7 +53,7 @@ fun HomeScreen(
     var showDialog by remember { mutableStateOf(false) }
     var financialAdvice by remember { mutableStateOf("") }
 
-    // Lógica para mostrar diferentes consejos
+
     when {
         totalIngresos > totalGastos -> {
             financialAdvice = """
@@ -109,18 +112,22 @@ fun HomeScreen(
             ) {
                 Text(stringResource(id = R.string.AddEntryButton), color = Color.White)
             }
+            IconButton(
+                onClick = { showDialog = true }
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_advice),
+                    contentDescription = "Consejos",
+                    tint = Color(0xFFFFA500)
+                )
+            }
             Button(
                 onClick = onAddGastoClick,
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF39C9CD))
             ) {
                 Text(stringResource(id = R.string.AddExpenseButton), color = Color.White)
             }
-            Button(
-                onClick = { showDialog = true },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))
-            ) {
-                Text("Consejos", color = Color.White)
-            }
+
         }
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -168,8 +175,11 @@ fun HomeScreen(
                 Text(financialAdvice)
             },
             confirmButton = {
-                Button(onClick = { showDialog = false }) {
-                    Text("Cerrar")
+                Button(
+                    onClick = { showDialog = false },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2A65D8))
+                ) {
+                    Text("Cerrar", color = Color.White)
                 }
             }
         )
@@ -190,6 +200,8 @@ fun CircularProgressIndicatorWithText(
     val progressGastos = if (total > 0) gastos / total else 0.5
 
     Box(contentAlignment = Alignment.Center) {
+
+
         Canvas(modifier = Modifier.size(200.dp)) {
             val strokeWidth = 16.dp.toPx()
 
