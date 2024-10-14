@@ -2,7 +2,7 @@
     <string name="app_name">MoneyTrack</string>
     <string name="home">home</string>
     <string name="history">history</string>
-    <string name="profile">Test</string>
+    <string name="profile">Profile</string>
     <string name="AppTitle">Money Track</string>
     <string name="AddExpenseButton">Nuevo gasto</string>
     <string name="AddEntryButton">Nuevo ingreso</string>
@@ -11,9 +11,9 @@
     <string name="Expenses">Gastos</string>
     <string name="Recents">Recientes</string>
     <string name="autores">Autores</string>
-    <string name="creador_1_daniel_santiago_mu_oz_rodriguez">Creador 1: Daniel Santiago Muñoz Rodriguez</string>
-    <string name="creador_2_andr_s_felipe_herrera_artunduaga">Creador 2: Andrés Felipe Herrera Artunduaga</string>
-    <string name="creador_3_andrea_cuantindioy_ortiz">Creador 3: Andrea Cuantindioy Ortiz</string>
-    <string name="creador_3_elizabeth_qui_ones">Creador 3: Elizabeth Quiñones</string>
-    <string name="github_de_los_creadores_https_github_com_santiago1104_moneytrack">Github de los Creadores: https://github.com/Santiago1104/MoneyTrack</string>
+    <string name="creador_1_daniel_santiago_mu_oz_rodriguez">Daniel Muñoz</string>
+    <string name="creador_2_andr_s_felipe_herrera_artunduaga">Andrés Herrera</string>
+    <string name="creador_3_andrea_cuantindioy_ortiz">Andrea Cuantindioy</string>
+    <string name="creador_3_elizabeth_qui_ones">Elizabeth Quiñones</string>
+    <string name="github_de_los_creadores_https_github_com_santiago1104_moneytrack">Repositorio del proyecto: https://github.com/Santiago1104/MoneyTrack</string>
 </resources>
