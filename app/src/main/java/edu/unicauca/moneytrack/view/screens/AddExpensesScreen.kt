@@ -6,6 +6,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -13,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import edu.unicauca.moneytrack.model.clsExpense
+import edu.unicauca.moneytrack.model.clsEntry
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
 import java.util.UUID
 
@@ -21,14 +23,18 @@ fun AddExpensesScreen(
     navController: NavController,
     moneyViewModel: MoneyViewModel = viewModel()
 ) {
-    // Obtener la referencia del ViewModel compartido
-    val reference = moneyViewModel.referencia ?: "" // Si no hay referencia, usar una cadena vacía
+    // Obtener la lista de ingresos del ViewModel
+    val listaIngresos by moneyViewModel.listaIngresos.observeAsState(emptyList())
+
 
     // Variables de estado para los campos
     var expenseName by remember { mutableStateOf("") }
     var expenseValue by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf("") }
     var customCategory by remember { mutableStateOf("") }
+    var selectedReference by remember { mutableStateOf<clsEntry?>(null) } // Cambiado a clsEntry
+    var expandedReference by remember { mutableStateOf(false) }
+    var expandedCategory by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
 
     // Lista de categorías predefinidas
@@ -47,14 +53,35 @@ fun AddExpensesScreen(
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
-        // Campo de referencia (puede estar prellenado)
-        TextField(
-            value = reference,
-            onValueChange = { /* La referencia se obtiene del ViewModel, no se puede modificar aquí */ },
-            label = { Text("Referencia del Gasto") },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = false // Deshabilitar el campo si no se puede modificar
-        )
+        // Dropdown para seleccionar la referencia (si hay ingresos)
+        Box {
+            TextField(
+                value = selectedReference?.nombre ?: "", // Mostrar el nombre si la referencia está seleccionada
+                onValueChange = { /* No necesitamos cambiarlo manualmente aquí */ },
+                label = { Text("Referencia del Gasto") },
+                modifier = Modifier.fillMaxWidth(),
+                readOnly = true, // Solo lectura
+                trailingIcon = {
+                    IconButton(onClick = { expandedReference = !expandedReference }) {
+                        Icon(Icons.Default.ArrowDropDown, contentDescription = "Select Reference")
+                    }
+                }
+            )
+            DropdownMenu(
+                expanded = expandedReference,
+                onDismissRequest = { expandedReference = false }
+            ) {
+                listaIngresos.forEach { ingreso ->
+                    DropdownMenuItem(
+                        text = { Text(ingreso.nombre) }, // Mostrar el nombre del ingreso
+                        onClick = {
+                            selectedReference = ingreso // Almacena el ingreso seleccionado completo
+                            expandedReference = false
+                        }
+                    )
+                }
+            }
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -69,8 +96,6 @@ fun AddExpensesScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         // Selección de categoría con Dropdown
-        var expanded by remember { mutableStateOf(false) }
-
         Box {
             TextField(
                 value = if (selectedCategory == "Otro") customCategory else selectedCategory,
@@ -79,21 +104,21 @@ fun AddExpensesScreen(
                 modifier = Modifier.fillMaxWidth(),
                 readOnly = selectedCategory != "Otro", // Solo permite escritura si selecciona "Otro"
                 trailingIcon = {
-                    IconButton(onClick = { expanded = !expanded }) {
+                    IconButton(onClick = { expandedCategory = !expandedCategory }) {
                         Icon(Icons.Default.ArrowDropDown, contentDescription = "Select Category")
                     }
                 }
             )
             DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
+                expanded = expandedCategory,
+                onDismissRequest = { expandedCategory = false }
             ) {
                 categorias.forEach { categoria ->
                     DropdownMenuItem(
                         text = { Text(text = categoria) },
                         onClick = {
                             selectedCategory = categoria
-                            expanded = false
+                            expandedCategory = false
                             if (categoria != "Otro") customCategory = "" // Limpia la categoría personalizada si no es "Otro"
                         }
                     )
@@ -124,15 +149,15 @@ fun AddExpensesScreen(
             onClick = {
                 val valorGasto = expenseValue.toDoubleOrNull()
 
-                if (expenseName.isNotBlank() && valorGasto != null && (selectedCategory.isNotBlank() || customCategory.isNotBlank())) {
+                if (expenseName.isNotBlank() && valorGasto != null && selectedReference != null && (selectedCategory.isNotBlank() || customCategory.isNotBlank())) {
                     // Crear un nuevo gasto
                     val nuevaCategoria = if (selectedCategory == "Otro") customCategory else selectedCategory
                     val nuevoGasto = clsExpense(
                         id = UUID.randomUUID().toString(),
                         nombre = expenseName,
                         valor = valorGasto,
-                        //referencia = reference, // Usar la referencia no logro pasar ña referencia
-                        categoria = nuevaCategoria // Usar la categoría seleccionada
+                        referencia = selectedReference?.nombre ?: "", // Asociar la referencia (nombre del ingreso)
+                        categoria = nuevaCategoria
                     )
                     moneyViewModel.agregarGasto(nuevoGasto) // Llamar al ViewModel para agregar el gasto
                     // Limpiar campos
@@ -140,8 +165,9 @@ fun AddExpensesScreen(
                     expenseValue = ""
                     selectedCategory = ""
                     customCategory = ""
+                    selectedReference = null // Limpiar la referencia seleccionada
                 } else {
-                    errorMessage = "Por favor ingresa un nombre válido, un valor numérico y selecciona una categoría."
+                    errorMessage = "Por favor ingresa un nombre válido, un valor numérico, selecciona una referencia y una categoría."
                 }
             },
             modifier = Modifier.fillMaxWidth()

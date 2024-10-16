@@ -28,7 +28,6 @@ class MoneyViewModel:ViewModel (){
 
     private var _dinero = MutableLiveData<clsMoney?>()
     val dinero: MutableLiveData<clsMoney?> = _dinero
-    var referencia: String? by mutableStateOf(null)
 
     init {
         obtenerGastos()

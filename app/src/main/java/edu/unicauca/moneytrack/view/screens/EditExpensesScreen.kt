@@ -2,7 +2,13 @@ package edu.unicauca.moneytrack.view.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -14,6 +20,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import edu.unicauca.moneytrack.model.clsEntry
 import edu.unicauca.moneytrack.model.clsExpense
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
 
@@ -34,9 +41,12 @@ fun EditExpensesScreen(
     // Variables de estado para los campos editables
     var expenseName by remember { mutableStateOf(expense?.nombre ?: "") }
     var expenseValue by remember { mutableStateOf(expense?.valor?.toString() ?: "") }
-    //var expenseReference by remember { mutableStateOf(expense?.referencia ?: "") }
+    var selectedReference by remember { mutableStateOf<clsEntry?>(null) } // Referencia del gasto
     var selectedCategory by remember { mutableStateOf(expense?.categoria ?: "") }
     var errorMessage by remember { mutableStateOf("") }
+
+    // Obtener la lista de referencias del ViewModel
+    val listaIngresos by moneyViewModel.listaIngresos.observeAsState(emptyList())
 
     Column(
         modifier = Modifier
@@ -72,13 +82,37 @@ fun EditExpensesScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Campo para modificar la referencia del gasto
-        /*TextField(
-            value = expenseReference,
-            onValueChange = { expenseReference = it },
-            label = { Text("Referencia del Gasto") },
-            modifier = Modifier.fillMaxWidth()
-        )*/
+        // Selección de referencia con Dropdown
+        var expandedReference by remember { mutableStateOf(false) }
+
+        Box {
+            TextField(
+                value = selectedReference?.nombre ?: "", // Mostrar el nombre de la referencia seleccionada
+                onValueChange = { /* Campo de referencia solo se selecciona */ },
+                label = { Text("Referencia del Gasto") },
+                modifier = Modifier.fillMaxWidth(),
+                readOnly = true, // El campo es solo de lectura
+                trailingIcon = {
+                    IconButton(onClick = { expandedReference = !expandedReference }) {
+                        Icon(Icons.Default.ArrowDropDown, contentDescription = "Select Reference")
+                    }
+                }
+            )
+            DropdownMenu(
+                expanded = expandedReference,
+                onDismissRequest = { expandedReference = false }
+            ) {
+                listaIngresos.forEach { ingreso ->
+                    DropdownMenuItem(
+                        text = { Text(text = ingreso.nombre) }, // Mostrar el nombre del ingreso
+                        onClick = {
+                            selectedReference = ingreso // Asignar el ingreso seleccionado como referencia
+                            expandedReference = false
+                        }
+                    )
+                }
+            }
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -102,17 +136,17 @@ fun EditExpensesScreen(
             onClick = {
                 val valorGasto = expenseValue.toDoubleOrNull()
 
-                if (expenseName.isNotBlank() && valorGasto != null && selectedCategory.isNotBlank()) {
+                if (expenseName.isNotBlank() && valorGasto != null && selectedCategory.isNotBlank() && selectedReference != null) {
                     val nuevoGasto = expense!!.copy(
                         nombre = expenseName,
                         valor = valorGasto,
-                //        referencia = expenseReference,
+                        referencia = selectedReference?.nombre ?: "", // Usar la referencia seleccionada
                         categoria = selectedCategory
                     )
                     moneyViewModel.actualizarGasto(nuevoGasto) // Llamando al método de ViewModel
-                    navController.navigate("adminGastos") // Navegando de vuelta a la pantalla de administración de gastos
+                    navController.popBackStack() // Regresar a la pantalla anterior
                 } else {
-                    errorMessage = "Por favor ingresa un nombre válido, un valor numérico y una categoría."
+                    errorMessage = "Por favor ingresa un nombre válido, un valor numérico, una referencia y una categoría."
                 }
             },
             modifier = Modifier.fillMaxWidth()
@@ -126,15 +160,12 @@ fun EditExpensesScreen(
         Button(
             onClick = {
                 moneyViewModel.borrarGasto(expense!!.id) // Eliminar el gasto usando el ViewModel
-                navController.navigate("adminGastos") // Regresar a la pantalla de administración de gastos
+                navController.popBackStack() // Regresar a la pantalla anterior
             },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Eliminar Gasto")
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
 
         Spacer(modifier = Modifier.height(16.dp))
 
