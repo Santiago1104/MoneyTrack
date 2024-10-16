@@ -135,13 +135,6 @@ fun EditExpensesScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Botón para volver a la pantalla anterior
-        Button(
-            onClick = { navController.navigate("adminGastos") },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Volver a Administrar Gastos")
-        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -150,7 +143,7 @@ fun EditExpensesScreen(
             onClick = { navController.navigate("home") },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Volver al Home")
+            Text("Volver")
         }
     }
 }
