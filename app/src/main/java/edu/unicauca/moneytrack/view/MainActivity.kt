@@ -23,6 +23,7 @@ import edu.unicauca.moneytrack.view.screens.EditExpensesScreen
 import edu.unicauca.moneytrack.view.screens.EditarIngresoScreen
 import edu.unicauca.moneytrack.view.screens.HomeScreen
 import edu.unicauca.moneytrack.view.screens.NuevoIngresoScreen
+import edu.unicauca.moneytrack.view.screens.ProfileScreen
 import edu.unicauca.moneytrack.view.screens.TestScreen
 import edu.unicauca.moneytrack.view.screens.TransactionHistoryScreen
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
@@ -80,7 +81,7 @@ fun MyApp(moneyViewModel: MoneyViewModel) {
                 )
             }
             composable("history") { TransactionHistoryScreen(navController = navController, moneyViewModel = moneyViewModel) }
-            composable("profile") { TestScreen(moneyViewModel = moneyViewModel)}
+            composable("profile") { ProfileScreen(navController = navController) }
             composable("authors") { AuthorsScreen(navController) }
         }
     }
