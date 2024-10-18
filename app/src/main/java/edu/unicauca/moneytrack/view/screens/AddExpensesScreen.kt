@@ -149,7 +149,11 @@ fun AddExpensesScreen(
             Text(text = "Gasto guardado exitosamente", color = MaterialTheme.colorScheme.primary)
         }
 
-        // Botón para guardar el gasto
+// Obtener el dinero actual desde el ViewModel
+        val dineroActual by moneyViewModel.dinero.observeAsState(initial = null)
+
+// ...
+
         Button(
             onClick = {
                 // Limpiar error y mensaje de éxito al iniciar el guardado
@@ -168,22 +172,27 @@ fun AddExpensesScreen(
                         referencia = selectedReference?.nombre ?: "", // Asociar la referencia (nombre del ingreso)
                         categoria = nuevaCategoria
                     )
-                    moneyViewModel.agregarGasto(nuevoGasto) // Llamar al ViewModel para agregar el gasto
+                    try {
+                        moneyViewModel.agregarGasto(nuevoGasto) // Llamar al ViewModel para agregar el gasto
 
-                    // Limpiar campos
-                    expenseName = ""
-                    expenseValue = ""
-                    selectedCategory = ""
-                    customCategory = ""
-                    selectedReference = null // Limpiar la referencia seleccionada
+                        // Limpiar campos
+                        expenseName = ""
+                        expenseValue = ""
+                        selectedCategory = ""
+                        customCategory = ""
+                        selectedReference = null // Limpiar la referencia seleccionada
 
-                    // Mostrar mensaje de éxito
-                    showSuccessMessage = true
+                        // Mostrar mensaje de éxito
+                        showSuccessMessage = true
+                    } catch (e: Exception) {
+                        errorMessage = e.message ?: "Error desconocido al agregar el gasto."
+                    }
                 } else {
                     errorMessage = "Por favor ingresa un nombre válido, un valor numérico, selecciona una referencia y una categoría."
                 }
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = (dineroActual?.total ?: 0.0) > (expenseValue.toDoubleOrNull() ?: 0.0) // Habilitar solo si hay suficiente dinero
         ) {
             Text("Guardar")
         }

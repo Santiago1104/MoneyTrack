@@ -70,17 +70,25 @@ class MoneyViewModel:ViewModel (){
     }
 
 
-    fun agregarGasto(expense: clsExpense){
-        expense.id = UUID.randomUUID().toString()
-        viewModelScope.launch(Dispatchers.IO){
-            try{
-                db.collection("gastos").document(expense.id).set(expense)
-                _listaGastos.postValue(_listaGastos.value?.plus(expense))
-            }catch (e: Exception){
-                e.printStackTrace()
+    fun agregarGasto(expense: clsExpense) {
+        // Verificar si hay suficiente dinero
+        if (_dinero.value?.total ?: 0.0 >= expense.valor) {
+            expense.id = UUID.randomUUID().toString()
+            viewModelScope.launch(Dispatchers.IO) {
+                try {
+                    db.collection("gastos").document(expense.id).set(expense).await()
+                    _listaGastos.postValue(_listaGastos.value?.plus(expense))
+                    // Restar el gasto del dinero total
+                    actualizarDineroTotal(-expense.valor) // Restar el valor del gasto
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
+        } else {
+            throw Exception("No hay suficiente dinero para agregar este gasto.")
         }
     }
+
     fun actualizarGasto(expense: clsExpense) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
