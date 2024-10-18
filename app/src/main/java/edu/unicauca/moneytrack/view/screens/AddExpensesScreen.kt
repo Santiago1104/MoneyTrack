@@ -26,7 +26,6 @@ fun AddExpensesScreen(
     // Obtener la lista de ingresos del ViewModel
     val listaIngresos by moneyViewModel.listaIngresos.observeAsState(emptyList())
 
-
     // Variables de estado para los campos
     var expenseName by remember { mutableStateOf("") }
     var expenseValue by remember { mutableStateOf("") }
@@ -36,6 +35,7 @@ fun AddExpensesScreen(
     var expandedReference by remember { mutableStateOf(false) }
     var expandedCategory by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
+    var showSuccessMessage by remember { mutableStateOf(false) } // Variable para el feedback de éxito
 
     // Lista de categorías predefinidas
     val categorias = listOf("Arriendo", "Servicios", "Compras", "Transporte", "Otro")
@@ -53,11 +53,11 @@ fun AddExpensesScreen(
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
-        // Dropdown para seleccionar la referencia (si hay ingresos)
+        // Dropdown para seleccionar la referencia de que ingreso sale el gasto
         Box {
             TextField(
                 value = selectedReference?.nombre ?: "", // Mostrar el nombre si la referencia está seleccionada
-                onValueChange = { /* No necesitamos cambiarlo manualmente aquí */ },
+                onValueChange = { },
                 label = { Text("Referencia del Gasto") },
                 modifier = Modifier.fillMaxWidth(),
                 readOnly = true, // Solo lectura
@@ -144,9 +144,18 @@ fun AddExpensesScreen(
             Text(text = errorMessage, color = MaterialTheme.colorScheme.error)
         }
 
+        // Mostrar mensaje de éxito si se guarda correctamente
+        if (showSuccessMessage) {
+            Text(text = "Gasto guardado exitosamente", color = MaterialTheme.colorScheme.primary)
+        }
+
         // Botón para guardar el gasto
         Button(
             onClick = {
+                // Limpiar error y mensaje de éxito al iniciar el guardado
+                errorMessage = ""
+                showSuccessMessage = false
+
                 val valorGasto = expenseValue.toDoubleOrNull()
 
                 if (expenseName.isNotBlank() && valorGasto != null && selectedReference != null && (selectedCategory.isNotBlank() || customCategory.isNotBlank())) {
@@ -160,12 +169,16 @@ fun AddExpensesScreen(
                         categoria = nuevaCategoria
                     )
                     moneyViewModel.agregarGasto(nuevoGasto) // Llamar al ViewModel para agregar el gasto
+
                     // Limpiar campos
                     expenseName = ""
                     expenseValue = ""
                     selectedCategory = ""
                     customCategory = ""
                     selectedReference = null // Limpiar la referencia seleccionada
+
+                    // Mostrar mensaje de éxito
+                    showSuccessMessage = true
                 } else {
                     errorMessage = "Por favor ingresa un nombre válido, un valor numérico, selecciona una referencia y una categoría."
                 }

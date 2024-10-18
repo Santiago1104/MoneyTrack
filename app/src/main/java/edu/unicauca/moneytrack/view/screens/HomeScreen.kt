@@ -71,7 +71,7 @@ fun HomeScreen(
                 Aquí algunos consejos:
                 1. Revisa tus gastos y elimina aquellos innecesarios.
                 2. Crea un presupuesto y ajusta tu estilo de vida para no gastar de más.
-                3. Considera aumentar tus ingresos buscando un trabajo adicional o freelance.
+                3. Considera aumentar tus ingresos buscando un trabajo adicional o freelance.               
             """.trimIndent()
         }
         else -> {

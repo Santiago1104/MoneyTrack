@@ -159,7 +159,7 @@ fun EditExpensesScreen(
         // Botón para eliminar el gasto
         Button(
             onClick = {
-                moneyViewModel.borrarGasto(expense!!.id) // Eliminar el gasto usando el ViewModel
+                moneyViewModel.borrarGasto(expense!!.id) // Eliminar el gasto usando el ViewModel y restituir el dinero
                 navController.popBackStack() // Regresar a la pantalla anterior
             },
             modifier = Modifier.fillMaxWidth()

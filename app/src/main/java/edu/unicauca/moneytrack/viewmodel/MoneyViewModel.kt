@@ -1,5 +1,6 @@
 package edu.unicauca.moneytrack.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -36,16 +37,21 @@ class MoneyViewModel:ViewModel (){
     }
 
     fun obtenerGastos() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val resultado = db.collection("gastos").get().await()
-                val gastos = resultado.documents.mapNotNull { it.toObject(clsExpense::class.java) }
+        db.collection("gastos").addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                Log.w("MoneyViewModel", "Listen failed.", e)
+                return@addSnapshotListener
+            }
+
+            if (snapshot != null) {
+                val gastos = snapshot.documents.mapNotNull { it.toObject(clsExpense::class.java) }
                 _listaGastos.postValue(gastos)
-            } catch (e: Exception) {
-                e.printStackTrace()
+            } else {
+                Log.d("MoneyViewModel", "Current data: null")
             }
         }
     }
+
     // Obtener el gasto por ID, devolviendo LiveData
     fun getExpenseByIdLive(expenseId: String): LiveData<clsExpense?> {
         val expenseLiveData = MutableLiveData<clsExpense?>()
@@ -75,28 +81,38 @@ class MoneyViewModel:ViewModel (){
             }
         }
     }
-    fun actualizarGasto(expense: clsExpense){
-        viewModelScope.launch(Dispatchers.IO){
-            try{
+    fun actualizarGasto(expense: clsExpense) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                // Actualiza el gasto en Firestore
                 db.collection("gastos").document(expense.id).update(expense.toMap()).await()
-                _listaGastos.postValue(_listaGastos.value?.map{if(it.id == expense.id) expense else it})
-            }catch (e: Exception){
-                e.printStackTrace()
-            }
-
-        }
-    }
-
-    fun borrarGasto(id: String){
-        viewModelScope.launch(Dispatchers.IO){
-            try{
-           db.collection("gastos").document(id).delete().await()
-                _listaGastos.postValue(_listaGastos.value?.filter { it.id != id })
-            }catch (e: Exception){
+                // No es necesario actualizar _listaGastos aquí, el listener se encargará de eso
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
     }
+
+    fun borrarGasto(id: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                // Buscar el gasto a eliminar
+                val gastoAEliminar = _listaGastos.value?.find { it.id == id }
+                if (gastoAEliminar != null) {
+                    actualizarDineroTotal(-gastoAEliminar.valor) // Restituir el dinero gastado
+                }
+
+                // Eliminar el gasto de la base de datos
+                db.collection("gastos").document(id).delete().await()
+
+                // No es necesario actualizar _listaGastos aquí, ya que el listener lo hará automáticamente.
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+
 
     fun obtenerIngresos() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -157,7 +173,6 @@ class MoneyViewModel:ViewModel (){
         }
     }
 
-
     fun actualizarDineroTotal(cambio: Double) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -171,6 +186,5 @@ class MoneyViewModel:ViewModel (){
             }
         }
     }
-
 
 }
