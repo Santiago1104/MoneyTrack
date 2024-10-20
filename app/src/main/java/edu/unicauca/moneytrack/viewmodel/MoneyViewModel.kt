@@ -29,7 +29,6 @@ class MoneyViewModel:ViewModel (){
     init {
         obtenerGastos()
         obtenerIngresos()
-        obtenerDinero()
     }
 
     fun obtenerGastos() {
@@ -123,32 +122,6 @@ class MoneyViewModel:ViewModel (){
         }
     }
 
-    fun obtenerDinero() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                // Obtener el documento con ID "total" desde la colección "dinero"
-                val doc = db.collection("dinero").document("total").get().await()
-                val dinero = doc.toObject(clsMoney::class.java) // Convertir a clsMoney
-                _dinero.postValue(dinero) // Actualizar LiveData con el dinero obtenido
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
 
-
-    fun actualizarDineroTotal(cambio: Double) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val dineroActual = _dinero.value ?: clsMoney(id = "", total = 0.0)
-                val nuevoTotal = dineroActual.total + cambio
-                val dineroActualizado = dineroActual.copy(total = nuevoTotal)
-                db.collection("dinero").document("total").set(dineroActualizado).await()
-                _dinero.postValue(dineroActualizado)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
 
 }

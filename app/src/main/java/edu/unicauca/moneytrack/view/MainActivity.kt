@@ -22,7 +22,6 @@ import edu.unicauca.moneytrack.view.screens.EditarIngresoScreen
 import edu.unicauca.moneytrack.view.screens.HomeScreen
 import edu.unicauca.moneytrack.view.screens.NuevoIngresoScreen
 import edu.unicauca.moneytrack.view.screens.ProfileScreen
-import edu.unicauca.moneytrack.view.screens.TestScreen
 import edu.unicauca.moneytrack.view.screens.TransactionHistoryScreen
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
 
