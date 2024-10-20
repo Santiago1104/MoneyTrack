@@ -126,26 +126,40 @@ fun EditarIngresoScreen(
 
             Button(
                 onClick = {
-                    val valorIngreso = valor.text.toDouble()
+                    val valorIngreso = valor.text.toDoubleOrNull()
+
+                    // Validación de nombres duplicados (excepto el ingreso actual)
+                    val ingresoExistente = viewModel.listaIngresos.value?.any {
+                        it.nombre == referencia.text && it.id != ingreso.id
+                    }
 
                     // Validaciones
-                    if (valorIngreso == null) {
-                        errorMensaje = "Por favor, ingrese un valor válido"
-                    } else if (valorIngreso < 0) {
-                        errorMensaje = "No se permiten valores negativos"
-                    } else if (valor.text.length > 7) {
-                        errorMensaje = "El número no puede tener más de 7 dígitos"
-                    } else if (!valor.text.matches(Regex("^[0-9]+\$"))) {
-                        errorMensaje = "Solo se permiten números enteros"
-                    } else {
-                        // Actualizar el ingreso si el valor es válido
-                        val updatedIngreso = ingreso.copy(
-                            nombre = referencia.text,
-                            valor = valorIngreso.toDouble()
-                        )
-                        viewModel.actualizarIngreso(updatedIngreso)
-                        onIngresoEditado() // Navegar de vuelta después de guardar
-                        errorMensaje = null // Limpiar error después de guardar
+                    when {
+                        valorIngreso == null -> {
+                            errorMensaje = "Por favor, ingrese un valor válido"
+                        }
+                        valorIngreso < 0 -> {
+                            errorMensaje = "No se permiten valores negativos"
+                        }
+                        valor.text.length > 7 -> {
+                            errorMensaje = "El número no puede tener más de 7 dígitos"
+                        }
+                        !valor.text.matches(Regex("^[0-9]+\$")) -> {
+                            errorMensaje = "Solo se permiten números enteros"
+                        }
+                        ingresoExistente == true -> {
+                            errorMensaje = "Ya existe un ingreso con este nombre. Por favor, ingrese uno diferente."
+                        }
+                        else -> {
+                            // Actualizar el ingreso si el valor es válido
+                            val updatedIngreso = ingreso.copy(
+                                nombre = referencia.text,
+                                valor = valorIngreso.toDouble()
+                            )
+                            viewModel.actualizarIngreso(updatedIngreso)
+                            onIngresoEditado() // Navegar de vuelta después de guardar
+                            errorMensaje = null // Limpiar error después de guardar
+                        }
                     }
                 },
                 modifier = Modifier
