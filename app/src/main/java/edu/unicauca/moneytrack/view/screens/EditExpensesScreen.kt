@@ -134,19 +134,44 @@ fun EditExpensesScreen(
         // Botón para guardar los cambios
         Button(
             onClick = {
+                // Limpiar mensaje de error antes de realizar las validaciones
+                errorMessage = ""
+
                 val valorGasto = expenseValue.toDoubleOrNull()
 
-                if (expenseName.isNotBlank() && valorGasto != null && selectedCategory.isNotBlank() && selectedReference != null) {
-                    val nuevoGasto = expense!!.copy(
-                        nombre = expenseName,
-                        valor = valorGasto,
-                        referencia = selectedReference?.nombre ?: "", // Usar la referencia seleccionada
-                        categoria = selectedCategory
-                    )
-                    moneyViewModel.actualizarGasto(nuevoGasto) // Llamando al método de ViewModel
-                    navController.popBackStack() // Regresar a la pantalla anterior
-                } else {
-                    errorMessage = "Por favor ingresa un nombre válido, un valor numérico, una referencia y una categoría."
+                // Validaciones
+                when {
+                    expenseName.isBlank() -> {
+                        errorMessage = "Por favor ingresa un nombre válido."
+                    }
+                    valorGasto == null -> {
+                        errorMessage = "Por favor ingresa un valor numérico válido."
+                    }
+                    valorGasto < 0 -> {
+                        errorMessage = "No se permiten valores negativos."
+                    }
+                    expenseValue.length > 7 -> {
+                        errorMessage = "El valor no puede tener más de 7 dígitos."
+                    }
+                    !expenseValue.matches(Regex("^[0-9]+\$")) -> {
+                        errorMessage = "Solo se permiten números enteros."
+                    }
+                    selectedCategory.isBlank() -> {
+                        errorMessage = "Por favor ingresa una categoría."
+                    }
+                    selectedReference == null -> {
+                        errorMessage = "Por favor selecciona una referencia."
+                    }
+                    else -> {
+                        val nuevoGasto = expense!!.copy(
+                            nombre = expenseName,
+                            valor = valorGasto,
+                            referencia = selectedReference?.nombre ?: "", // Usar la referencia seleccionada
+                            categoria = selectedCategory
+                        )
+                        moneyViewModel.actualizarGasto(nuevoGasto) // Llamando al método de ViewModel
+                        navController.popBackStack() // Regresar a la pantalla anterior
+                    }
                 }
             },
             modifier = Modifier.fillMaxWidth()
