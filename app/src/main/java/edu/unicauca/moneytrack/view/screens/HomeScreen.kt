@@ -25,14 +25,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import edu.unicauca.moneytrack.R
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
 
@@ -44,10 +44,8 @@ fun HomeScreen(
     onEditIncomeClick: (String) -> Unit,
     onEditGastoClick: (String) -> Unit
 ) {
-    val dineroActual by viewModel.dinero.observeAsState(initial = null)
     val ingresos by viewModel.listaIngresos.observeAsState(emptyList())
     val gastos by viewModel.listaGastos.observeAsState(emptyList())
-
     val totalIngresos = ingresos.sumOf { it.valor }
     val totalGastos = gastos.sumOf { it.valor }
 
@@ -71,7 +69,7 @@ fun HomeScreen(
                 Aquí algunos consejos:
                 1. Revisa tus gastos y elimina aquellos innecesarios.
                 2. Crea un presupuesto y ajusta tu estilo de vida para no gastar de más.
-                3. Considera aumentar tus ingresos buscando un trabajo adicional o freelance.               
+                3. Considera aumentar tus ingresos buscando un trabajo adicional o freelance.
             """.trimIndent()
         }
         else -> {
@@ -95,15 +93,10 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        if (dineroActual != null) {
-            CircularProgressIndicatorWithText(
-                ingresos = totalIngresos,
-                gastos = totalGastos,
-                dineroActual = dineroActual!!.total // Asegúrate de que 'total' sea accesible aquí
-            )
-        } else {
-            Text(text = "Cargando datos de dinero...", style = MaterialTheme.typography.bodyMedium)
-        }
+        CircularProgressIndicatorWithText(
+            ingresos = totalIngresos,
+            gastos = totalGastos
+        )
 
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -155,8 +148,6 @@ fun HomeScreen(
                 isPositive = true,
                 onClick = { onEditIncomeClick(it.id) }
             )
-        } ?: run {
-            Text(text = "No hay ingresos recientes", style = MaterialTheme.typography.bodyMedium)
         }
 
         latestGasto?.let {
@@ -168,8 +159,6 @@ fun HomeScreen(
                 isPositive = false,
                 onClick = { onEditGastoClick(it.id) }
             )
-        } ?: run {
-            Text(text = "No hay gastos recientes", style = MaterialTheme.typography.bodyMedium)
         }
     }
 
@@ -202,9 +191,8 @@ fun HomeScreen(
 fun CircularProgressIndicatorWithText(
     ingresos: Double,
     gastos: Double,
-    dineroActual: Double
 ) {
-    val total = ingresos + gastos
+    val total = ingresos - gastos
     val progressIngresos = if (total > 0) ingresos / total else 0.5
     val progressGastos = if (total > 0) gastos / total else 0.5
 
@@ -240,7 +228,7 @@ fun CircularProgressIndicatorWithText(
         }
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "$${dineroActual.format(2)}", style = MaterialTheme.typography.headlineMedium)
+            Text(text = "$${total.format(2)}", style = MaterialTheme.typography.headlineMedium)
             Text(text = stringResource(id = R.string.CurrentMoney), style = MaterialTheme.typography.bodyMedium)
         }
     }
@@ -277,5 +265,4 @@ fun CircularProgressIndicatorWithText(
     }
 }
 
-// Función para formatear números
 fun Double.format(digits: Int) = "%.${digits}f".format(this)

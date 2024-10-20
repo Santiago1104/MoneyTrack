@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
 
-class MoneyViewModel:ViewModel (){
+class MoneyViewModel: ViewModel () {
     private val db = Firebase.firestore
 
     private var _listaGastos = MutableLiveData<List<clsExpense>>(emptyList())
@@ -33,7 +33,6 @@ class MoneyViewModel:ViewModel (){
     init {
         obtenerGastos()
         obtenerIngresos()
-        obtenerDinero()
     }
 
     fun obtenerGastos() {
@@ -68,7 +67,6 @@ class MoneyViewModel:ViewModel (){
 
         return expenseLiveData
     }
-
 
     fun agregarGasto(expense: clsExpense) {
         // Verificar si hay suficiente dinero
@@ -120,8 +118,6 @@ class MoneyViewModel:ViewModel (){
         }
     }
 
-
-
     fun obtenerIngresos() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -168,19 +164,6 @@ class MoneyViewModel:ViewModel (){
         }
     }
 
-    fun obtenerDinero() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                // Obtener el documento con ID "total" desde la colección "dinero"
-                val doc = db.collection("dinero").document("total").get().await()
-                val dinero = doc.toObject(clsMoney::class.java) // Convertir a clsMoney
-                _dinero.postValue(dinero) // Actualizar LiveData con el dinero obtenido
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
-
     fun actualizarDineroTotal(cambio: Double) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -194,5 +177,4 @@ class MoneyViewModel:ViewModel (){
             }
         }
     }
-
 }
