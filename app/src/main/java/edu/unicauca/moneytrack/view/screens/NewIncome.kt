@@ -100,7 +100,16 @@ fun NuevoIngresoScreen(
         Button(
             onClick = {
                 val valorIngreso = valor.text.toDoubleOrNull()
-                if (valorIngreso != null) {
+                // Validaciones
+                if (valorIngreso == null) {
+                    errorMensaje = "Por favor, ingrese un valor válido"
+                } else if (valorIngreso < 0) {
+                    errorMensaje = "No se permiten valores negativos"
+                } else if (valor.text.length > 7) {
+                    errorMensaje = "El número no puede tener más de 7 dígitos"
+                } else if (!valor.text.matches(Regex("^[0-9]+\$"))) {
+                    errorMensaje = "Solo se permiten números enteros"
+                } else {
                     // Obtener la fecha actual en formato personalizado
                     val formatoFecha = SimpleDateFormat("dd/MM/yyyy")
                     val fechaActual = formatoFecha.format(Date())
@@ -110,13 +119,12 @@ fun NuevoIngresoScreen(
                         clsEntry(
                             id = "",
                             nombre = referencia.text,
-                            valor = valorIngreso,
+                            valor = valorIngreso.toDouble(),
                             fecha = fechaActual
                         )
                     )
                     onIngresoGuardado() // Navegar después de guardar
-                } else {
-                    errorMensaje = "Por favor, ingrese un valor válido"
+                    errorMensaje = null // Limpiar error después de guardado
                 }
             },
             modifier = Modifier
