@@ -17,7 +17,6 @@ import edu.unicauca.moneytrack.model.clsExpense
 import edu.unicauca.moneytrack.model.clsEntry
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
 import java.util.UUID
-
 @Composable
 fun AddExpensesScreen(
     navController: NavController,
@@ -148,12 +147,8 @@ fun AddExpensesScreen(
         if (showSuccessMessage) {
             Text(text = "Gasto guardado exitosamente", color = MaterialTheme.colorScheme.primary)
         }
-
-// Obtener el dinero actual desde el ViewModel
+        // Obtener el dinero actual desde el ViewModel
         val dineroActual by moneyViewModel.dinero.observeAsState(initial = null)
-
-// ...
-
         Button(
             onClick = {
                 // Limpiar error y mensaje de éxito al iniciar el guardado
@@ -162,37 +157,56 @@ fun AddExpensesScreen(
 
                 val valorGasto = expenseValue.toDoubleOrNull()
 
-                if (expenseName.isNotBlank() && valorGasto != null && selectedReference != null && (selectedCategory.isNotBlank() || customCategory.isNotBlank())) {
-                    // Crear un nuevo gasto
-                    val nuevaCategoria = if (selectedCategory == "Otro") customCategory else selectedCategory
-                    val nuevoGasto = clsExpense(
-                        id = UUID.randomUUID().toString(),
-                        nombre = expenseName,
-                        valor = valorGasto,
-                        referencia = selectedReference?.nombre ?: "", // Asociar la referencia (nombre del ingreso)
-                        categoria = nuevaCategoria
-                    )
-                    try {
-                        moneyViewModel.agregarGasto(nuevoGasto) // Llamar al ViewModel para agregar el gasto
-
-                        // Limpiar campos
-                        expenseName = ""
-                        expenseValue = ""
-                        selectedCategory = ""
-                        customCategory = ""
-                        selectedReference = null // Limpiar la referencia seleccionada
-
-                        // Mostrar mensaje de éxito
-                        showSuccessMessage = true
-                    } catch (e: Exception) {
-                        errorMessage = e.message ?: "Error desconocido al agregar el gasto."
+                // Validaciones
+                when {
+                    expenseName.isBlank() -> {
+                        errorMessage = "Por favor ingresa un nombre válido."
                     }
-                } else {
-                    errorMessage = "Por favor ingresa un nombre válido, un valor numérico, selecciona una referencia y una categoría."
+                    valorGasto == null -> {
+                        errorMessage = "Por favor ingresa un valor numérico válido."
+                    }
+                    valorGasto < 0 -> {
+                        errorMessage = "No se permiten valores negativos."
+                    }
+                    expenseValue.length > 7 -> {
+                        errorMessage = "El valor no puede tener más de 7 dígitos."
+                    }
+                    !expenseValue.matches(Regex("^[0-9]+\$")) -> {
+                        errorMessage = "Solo se permiten números enteros."
+                    }
+                    selectedReference == null -> {
+                        errorMessage = "Por favor selecciona una referencia."
+                    }
+                    selectedCategory.isBlank() && customCategory.isBlank() -> {
+                        errorMessage = "Por favor selecciona una categoría."
+                    }
+                    else -> {
+                        // Crear un nuevo gasto
+                        val nuevaCategoria = if (selectedCategory == "Otro") customCategory else selectedCategory
+                        val nuevoGasto = clsExpense(
+                            id = UUID.randomUUID().toString(),
+                            nombre = expenseName,
+                            valor = valorGasto,
+                            referencia = selectedReference?.nombre ?: "", // Asociar la referencia (nombre del ingreso)
+                            categoria = nuevaCategoria
+                        )
+                        try {
+                            moneyViewModel.agregarGasto(nuevoGasto) // Llamar al ViewModel para agregar el gasto
+                            // Limpiar campos
+                            expenseName = ""
+                            expenseValue = ""
+                            selectedCategory = ""
+                            customCategory = ""
+                            selectedReference = null // Limpiar la referencia seleccionada
+                            // Mostrar mensaje de éxito
+                            showSuccessMessage = true
+                        } catch (e: Exception) {
+                            errorMessage = e.message ?: "Error desconocido al agregar el gasto."
+                        }
+                    }
                 }
             },
             modifier = Modifier.fillMaxWidth(),
-            enabled = (dineroActual?.total ?: 0.0) > (expenseValue.toDoubleOrNull() ?: 0.0) // Habilitar solo si hay suficiente dinero
         ) {
             Text("Guardar")
         }
