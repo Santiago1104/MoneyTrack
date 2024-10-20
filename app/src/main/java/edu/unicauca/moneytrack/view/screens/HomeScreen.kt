@@ -44,7 +44,6 @@ fun HomeScreen(
     onEditIncomeClick: (String) -> Unit,
     onEditGastoClick: (String) -> Unit
 ) {
-    val dineroActual by viewModel.dinero.observeAsState(initial = null)
     val ingresos by viewModel.listaIngresos.observeAsState(emptyList())
     val gastos by viewModel.listaGastos.observeAsState(emptyList())
     val totalIngresos = ingresos.sumOf { it.valor }
@@ -96,8 +95,7 @@ fun HomeScreen(
 
         CircularProgressIndicatorWithText(
             ingresos = totalIngresos,
-            gastos = totalGastos,
-            dineroActual = dineroActual?.total ?: 0.0
+            gastos = totalGastos
         )
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -193,9 +191,8 @@ fun HomeScreen(
 fun CircularProgressIndicatorWithText(
     ingresos: Double,
     gastos: Double,
-    dineroActual: Double
 ) {
-    val total = ingresos + gastos
+    val total = ingresos - gastos
     val progressIngresos = if (total > 0) ingresos / total else 0.5
     val progressGastos = if (total > 0) gastos / total else 0.5
 
@@ -231,7 +228,7 @@ fun CircularProgressIndicatorWithText(
         }
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "$${dineroActual.format(2)}", style = MaterialTheme.typography.headlineMedium)
+            Text(text = "$${total.format(2)}", style = MaterialTheme.typography.headlineMedium)
             Text(text = stringResource(id = R.string.CurrentMoney), style = MaterialTheme.typography.bodyMedium)
         }
     }
