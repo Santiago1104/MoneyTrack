@@ -19,7 +19,6 @@ import edu.unicauca.moneytrack.model.clsExpense
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
 import java.util.UUID
 
-
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -29,14 +28,11 @@ fun EditExpensesScreen(
     expenseId: String,
     moneyViewModel: MoneyViewModel = viewModel()
 ) {
-    // Obtener la lista de gastos y referencias del ViewModel
     val listaGastos by moneyViewModel.listaGastos.observeAsState(emptyList())
     val listaIngresos by moneyViewModel.listaIngresos.observeAsState(emptyList())
 
-    // Buscar el gasto que se va a editar
     val expenseToEdit = listaGastos.find { it.id == expenseId }
 
-    // Inicializar los campos del formulario con los datos del gasto
     var expenseName by remember(expenseToEdit) { mutableStateOf(expenseToEdit?.nombre ?: "") }
     var expenseValue by remember(expenseToEdit) { mutableStateOf(expenseToEdit?.valor?.toInt()?.toString() ?: "") }
     var selectedCategory by remember(expenseToEdit) { mutableStateOf(expenseToEdit?.categoria ?: "") }
@@ -49,71 +45,46 @@ fun EditExpensesScreen(
 
     val categorias = mutableListOf("Transporte", "Alimentación", "Servicios", "Arriendo")
 
-    // Cargar la referencia actual una vez que se carga el gasto
     LaunchedEffect(expenseToEdit) {
         selectedReference = listaIngresos.find { it.nombre == expenseToEdit?.referencia }
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
+        modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Editar Gasto",
-            style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.padding(bottom = 32.dp)
-        )
+        Text(text = "Editar Gasto", style = MaterialTheme.typography.headlineLarge, modifier = Modifier.padding(bottom = 32.dp))
 
-        // Dropdown para seleccionar la referencia del gasto
-        Box {
-            TextField(
-                value = selectedReference?.nombre ?: "",
-                onValueChange = { },
-                label = { Text("Referencia del Gasto") },
-                modifier = Modifier.fillMaxWidth(),
-                readOnly = true,
-                trailingIcon = {
-                    IconButton(onClick = { expandedReference = !expandedReference }) {
-                        Icon(Icons.Default.ArrowDropDown, contentDescription = "Select Reference")
-                    }
-                }
-            )
-            DropdownMenu(
-                expanded = expandedReference,
-                onDismissRequest = { expandedReference = false }
-            ) {
-                listaIngresos.forEach { ingreso ->
-                    DropdownMenuItem(
-                        text = { Text(ingreso.nombre) },
-                        onClick = {
-                            selectedReference = ingreso
-                            expandedReference = false
-                        }
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Campo de nombre del gasto
+        // Campo de nombre del gasto con validación
         TextField(
             value = expenseName,
-            onValueChange = { expenseName = it },
+            onValueChange = {
+                if (!it.all { char -> char.isDigit() }) { // Validar que no sea numérico
+                    expenseName = it
+                } else {
+                    errorMessage = "El nombre del gasto no puede ser numérico."
+                }
+            },
             label = { Text("Nombre del Gasto") },
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Selección de categoría con Dropdown
+        // Campo para seleccionar o ingresar la categoría
         Box {
             TextField(
                 value = if (selectedCategory == "Otro") customCategory else selectedCategory,
-                onValueChange = { if (selectedCategory == "Otro") customCategory = it },
+                onValueChange = {
+                    if (selectedCategory == "Otro") {
+                        if (!it.all { char -> char.isDigit() }) { // Validar que no sea numérico
+                            customCategory = it
+                        } else {
+                            errorMessage = "La categoría no puede ser numérica."
+                        }
+                    }
+                },
                 label = { Text("Categoría") },
                 modifier = Modifier.fillMaxWidth(),
                 readOnly = selectedCategory != "Otro",
@@ -123,40 +94,31 @@ fun EditExpensesScreen(
                     }
                 }
             )
-            DropdownMenu(
-                expanded = expandedCategory,
-                onDismissRequest = { expandedCategory = false }
-            ) {
+            DropdownMenu(expanded = expandedCategory, onDismissRequest = { expandedCategory = false }) {
                 categorias.forEach { categoria ->
-                    DropdownMenuItem(
-                        text = { Text(text = categoria) },
-                        onClick = {
-                            selectedCategory = categoria
-                            expandedCategory = false
-                            if (categoria != "Otro") customCategory = ""
-                        }
-                    )
-                }
-                // Opción para agregar una nueva categoría
-                DropdownMenuItem(
-                    text = { Text(text = "Otro") },
-                    onClick = {
-                        selectedCategory = "Otro"
+                    DropdownMenuItem(text = { Text(text = categoria) }, onClick = {
+                        selectedCategory = categoria
                         expandedCategory = false
-                    }
-                )
+                        if (categoria != "Otro") customCategory = ""
+                    })
+                }
+                DropdownMenuItem(text = { Text(text = "Otro") }, onClick = {
+                    selectedCategory = "Otro"
+                    expandedCategory = false
+                })
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Campo para ingresar el valor del gasto
+        // Campo de valor del gasto con validación de entero no negativo
         TextField(
             value = expenseValue,
             onValueChange = {
-                // Validar que solo se ingresen números enteros y que no sean negativos
-                if (it.all { char -> char.isDigit() } && it.length <= 7) {
+                if (it.all { char -> char.isDigit() } && it.length <= 7) { // Validar solo números enteros no negativos
                     expenseValue = it
+                } else {
+                    errorMessage = "El valor debe ser un número entero no negativo."
                 }
             },
             label = { Text("Valor en Pesos") },
@@ -166,7 +128,6 @@ fun EditExpensesScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Mensajes de error o éxito
         if (errorMessage.isNotEmpty()) {
             Text(text = errorMessage, color = MaterialTheme.colorScheme.error)
         }
@@ -174,26 +135,22 @@ fun EditExpensesScreen(
             Text(text = "Gasto actualizado exitosamente", color = MaterialTheme.colorScheme.primary)
         }
 
-        // Contenedor para los botones
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween // Espaciado entre botones
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // Botón para actualizar el gasto
             Button(
                 onClick = {
                     errorMessage = ""
                     showSuccessMessage = false
                     val valorGasto = expenseValue.toIntOrNull()
 
-                    // Validaciones
                     if (expenseName.isNotBlank() && valorGasto != null && selectedReference != null &&
                         (selectedCategory.isNotBlank() || customCategory.isNotBlank())) {
 
-                        // Validar que la nueva categoría no esté repetida
                         val nuevaCategoria = if (selectedCategory == "Otro") {
                             if (customCategory.isNotBlank() && !categorias.contains(customCategory)) {
-                                customCategory.also { categorias.add(it) } // Agregar nueva categoría a la lista
+                                customCategory.also { categorias.add(it) }
                             } else {
                                 errorMessage = "Por favor ingresa un nombre de categoría válido."
                                 return@Button
@@ -202,42 +159,39 @@ fun EditExpensesScreen(
                             selectedCategory
                         }
 
-                        // Obtener la fecha actual en formato personalizado
                         val formatoFecha = SimpleDateFormat("dd/MM/yyyy")
                         val fechaActual = formatoFecha.format(Date())
 
-                        // Actualizar el gasto con la fecha formateada
                         val updatedGasto = expenseToEdit?.copy(
                             nombre = expenseName,
                             valor = valorGasto.toDouble(),
                             referencia = selectedReference?.nombre ?: "",
                             categoria = nuevaCategoria,
-                            fecha = fechaActual // Cambiar la fecha a la fecha actual en el formato deseado
+                            fecha = fechaActual
                         )
 
                         if (updatedGasto != null) {
-                            moneyViewModel.actualizarGasto(updatedGasto) // Actualizar gasto
+                            moneyViewModel.actualizarGasto(updatedGasto)
                             showSuccessMessage = true
-                            navController.navigateUp() // Navegar hacia atrás después de guardar
+                            navController.navigateUp()
                         }
                     } else {
-                        errorMessage = "Por favor ingresa un nombre válido, un valor numérico, selecciona una referencia y una categoría."
+                        errorMessage = "Por favor completa todos los campos correctamente."
                     }
                 },
-                modifier = Modifier.weight(1f), // Para que tome el mismo espacio que el botón de eliminar
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2A65D8)) // Color personalizado
+                modifier = Modifier.weight(1f),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2A65D8))
             ) {
                 Text("Guardar")
             }
 
-            Spacer(modifier = Modifier.width(16.dp)) // Espacio entre botones
+            Spacer(modifier = Modifier.width(16.dp))
 
-            // Botón para eliminar el gasto
             Button(
                 onClick = {
                     expenseToEdit?.let {
-                        moneyViewModel.borrarGasto(it.id) // Eliminar el gasto
-                        navController.navigateUp() // Volver a la pantalla anterior después de eliminar
+                        moneyViewModel.borrarGasto(it.id)
+                        navController.navigateUp()
                     }
                 },
                 modifier = Modifier.weight(1f),
