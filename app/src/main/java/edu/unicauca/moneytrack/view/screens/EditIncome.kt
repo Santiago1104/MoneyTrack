@@ -34,6 +34,7 @@ fun EditarIngresoScreen(
     // Prellenar los campos con los datos actuales del ingreso
     var referencia by remember { mutableStateOf(TextFieldValue(ingreso.nombre)) }
     var valor by remember { mutableStateOf(TextFieldValue(ingreso.valor.toString())) }
+    var errorMensaje by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
@@ -87,8 +88,18 @@ fun EditarIngresoScreen(
                     onValueChange = { valor = it },
                     label = { Text("Valor") },
                     placeholder = { Text("$ 0.00") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = errorMensaje != null
                 )
+
+                // Mensaje de error
+                errorMensaje?.let {
+                    Text(
+                        text = it,
+                        color = Color.Red,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
             }
         }
 
@@ -115,12 +126,41 @@ fun EditarIngresoScreen(
 
             Button(
                 onClick = {
-                    val updatedIngreso = ingreso.copy(
-                        nombre = referencia.text,
-                        valor = valor.text.toDoubleOrNull() ?: ingreso.valor
-                    )
-                    viewModel.actualizarIngreso(updatedIngreso)
-                    onIngresoEditado() // Navegar de vuelta después de guardar
+                    val valorIngreso = valor.text.toDoubleOrNull()
+
+                    // Validación de nombres duplicados (excepto el ingreso actual)
+                    val ingresoExistente = viewModel.listaIngresos.value?.any {
+                        it.nombre == referencia.text && it.id != ingreso.id
+                    }
+
+                    // Validaciones
+                    when {
+                        valorIngreso == null -> {
+                            errorMensaje = "Por favor, ingrese un valor válido"
+                        }
+                        valorIngreso < 0 -> {
+                            errorMensaje = "No se permiten valores negativos"
+                        }
+                        valor.text.length > 7 -> {
+                            errorMensaje = "El número no puede tener más de 7 dígitos"
+                        }
+                        !valor.text.matches(Regex("^[0-9]+\$")) -> {
+                            errorMensaje = "Solo se permiten números enteros"
+                        }
+                        ingresoExistente == true -> {
+                            errorMensaje = "Ya existe un ingreso con este nombre. Por favor, ingrese uno diferente."
+                        }
+                        else -> {
+                            // Actualizar el ingreso si el valor es válido
+                            val updatedIngreso = ingreso.copy(
+                                nombre = referencia.text,
+                                valor = valorIngreso.toDouble()
+                            )
+                            viewModel.actualizarIngreso(updatedIngreso)
+                            onIngresoEditado() // Navegar de vuelta después de guardar
+                            errorMensaje = null // Limpiar error después de guardar
+                        }
+                    }
                 },
                 modifier = Modifier
                     .width(100.dp)

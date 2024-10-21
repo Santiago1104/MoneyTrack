@@ -32,6 +32,8 @@ android {
     }
     buildFeatures{
         viewBinding = true
+        dataBinding = true
+        compose = true
     }
 
     compileOptions {
@@ -52,6 +54,7 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
 }
 
 dependencies {
@@ -66,6 +69,10 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.navigation.runtime.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.firebase.database.ktx)
+    implementation(libs.androidx.room.runtime.android)
+
 
     val nav_version = "2.8.0"
 
@@ -81,11 +88,12 @@ dependencies {
 
     // Declare the dependency for the Cloud Firestore library
 
-    implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-firestore-ktx")
 
     implementation(platform("com.google.firebase:firebase-bom:33.3.0"))
 
     implementation("com.google.firebase:firebase-analytics")
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -94,6 +102,5 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
 
 }

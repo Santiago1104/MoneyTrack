@@ -25,10 +25,34 @@ class MoneyViewModel:ViewModel (){
 
     private var _dinero = MutableLiveData<clsMoney?>()
     val dinero: MutableLiveData<clsMoney?> = _dinero
-
     init {
-        obtenerGastos()
-        obtenerIngresos()
+        configurarListeners()
+    }
+
+    private fun configurarListeners() {
+        // Listener para la colección de gastos
+        db.collection("gastos").addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                // Manejar el error
+                e.printStackTrace()
+                return@addSnapshotListener
+            }
+
+            val gastos = snapshot?.documents?.mapNotNull { it.toObject(clsExpense::class.java) } ?: emptyList()
+            _listaGastos.postValue(gastos)
+        }
+
+        // Listener para la colección de ingresos
+        db.collection("ingresos").addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                // Manejar el error
+                e.printStackTrace()
+                return@addSnapshotListener
+            }
+
+            val ingresos = snapshot?.documents?.mapNotNull { it.toObject(clsEntry::class.java) } ?: emptyList()
+            _listaIngresos.postValue(ingresos)
+        }
     }
 
     fun obtenerGastos() {
@@ -70,7 +94,7 @@ class MoneyViewModel:ViewModel (){
     fun borrarGasto(id: String){
         viewModelScope.launch(Dispatchers.IO){
             try{
-           db.collection("gastos").document(id).delete().await()
+                db.collection("gastos").document(id).delete().await()
                 _listaGastos.postValue(_listaGastos.value?.filter { it.id != id })
             }catch (e: Exception){
                 e.printStackTrace()
@@ -125,7 +149,4 @@ class MoneyViewModel:ViewModel (){
             }
         }
     }
-
-
-
 }
