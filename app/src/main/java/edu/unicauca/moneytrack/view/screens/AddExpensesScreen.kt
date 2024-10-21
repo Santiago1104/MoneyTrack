@@ -17,27 +17,29 @@ import edu.unicauca.moneytrack.model.clsExpense
 import edu.unicauca.moneytrack.model.clsEntry
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
 import java.util.UUID
+
 @Composable
 fun AddExpensesScreen(
     navController: NavController,
     moneyViewModel: MoneyViewModel = viewModel()
 ) {
-    // Obtener la lista de ingresos del ViewModel
+    // Obtener la lista de ingresos y gastos del ViewModel
     val listaIngresos by moneyViewModel.listaIngresos.observeAsState(emptyList())
+    //por si necesitamos mostrar los gastos
+    val listaGastos by moneyViewModel.listaGastos.observeAsState(emptyList())
 
     // Variables de estado para los campos
     var expenseName by remember { mutableStateOf("") }
     var expenseValue by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf("") }
     var customCategory by remember { mutableStateOf("") }
-    var selectedReference by remember { mutableStateOf<clsEntry?>(null) } // Cambiado a clsEntry
+    var selectedReference by remember { mutableStateOf<clsEntry?>(null) }
     var expandedReference by remember { mutableStateOf(false) }
     var expandedCategory by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
-    var showSuccessMessage by remember { mutableStateOf(false) } // Variable para el feedback de éxito
+    var showSuccessMessage by remember { mutableStateOf(false) }
 
-    // Lista de categorías predefinidas
-    val categorias = listOf("Arriendo", "Servicios", "Compras", "Transporte", "Otro")
+    val categorias = mutableListOf("Transporte", "Alimentación", "Servicios", "Arriendo") // Lista predefinida de categorías
 
     Column(
         modifier = Modifier
@@ -52,14 +54,14 @@ fun AddExpensesScreen(
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
-        // Dropdown para seleccionar la referencia de que ingreso sale el gasto
+        // Dropdown para seleccionar la referencia del gasto
         Box {
             TextField(
-                value = selectedReference?.nombre ?: "", // Mostrar el nombre si la referencia está seleccionada
+                value = selectedReference?.nombre ?: "",
                 onValueChange = { },
                 label = { Text("Referencia del Gasto") },
                 modifier = Modifier.fillMaxWidth(),
-                readOnly = true, // Solo lectura
+                readOnly = true,
                 trailingIcon = {
                     IconButton(onClick = { expandedReference = !expandedReference }) {
                         Icon(Icons.Default.ArrowDropDown, contentDescription = "Select Reference")
@@ -72,9 +74,9 @@ fun AddExpensesScreen(
             ) {
                 listaIngresos.forEach { ingreso ->
                     DropdownMenuItem(
-                        text = { Text(ingreso.nombre) }, // Mostrar el nombre del ingreso
+                        text = { Text(ingreso.nombre) },
                         onClick = {
-                            selectedReference = ingreso // Almacena el ingreso seleccionado completo
+                            selectedReference = ingreso
                             expandedReference = false
                         }
                     )
@@ -101,7 +103,7 @@ fun AddExpensesScreen(
                 onValueChange = { if (selectedCategory == "Otro") customCategory = it },
                 label = { Text("Categoría") },
                 modifier = Modifier.fillMaxWidth(),
-                readOnly = selectedCategory != "Otro", // Solo permite escritura si selecciona "Otro"
+                readOnly = selectedCategory != "Otro",
                 trailingIcon = {
                     IconButton(onClick = { expandedCategory = !expandedCategory }) {
                         Icon(Icons.Default.ArrowDropDown, contentDescription = "Select Category")
@@ -112,16 +114,25 @@ fun AddExpensesScreen(
                 expanded = expandedCategory,
                 onDismissRequest = { expandedCategory = false }
             ) {
+                // Mostrar categorías existentes
                 categorias.forEach { categoria ->
                     DropdownMenuItem(
                         text = { Text(text = categoria) },
                         onClick = {
                             selectedCategory = categoria
                             expandedCategory = false
-                            if (categoria != "Otro") customCategory = "" // Limpia la categoría personalizada si no es "Otro"
+                            if (categoria != "Otro") customCategory = ""
                         }
                     )
                 }
+                // Opción para agregar una nueva categoría
+                DropdownMenuItem(
+                    text = { Text(text = "Otro") },
+                    onClick = {
+                        selectedCategory = "Otro"
+                        expandedCategory = false
+                    }
+                )
             }
         }
 
@@ -130,7 +141,12 @@ fun AddExpensesScreen(
         // Campo para ingresar el valor del gasto
         TextField(
             value = expenseValue,
-            onValueChange = { expenseValue = it },
+            onValueChange = {
+                // Validar que solo se ingresen números enteros y que no sean negativos
+                if (it.all { char -> char.isDigit() } && it.length <= 7) {
+                    expenseValue = it
+                }
+            },
             label = { Text("Valor en Pesos") },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
@@ -138,82 +154,70 @@ fun AddExpensesScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Mostrar mensaje de error si los campos no son válidos
+        // Mensajes de error o éxito
         if (errorMessage.isNotEmpty()) {
             Text(text = errorMessage, color = MaterialTheme.colorScheme.error)
         }
-
-        // Mostrar mensaje de éxito si se guarda correctamente
         if (showSuccessMessage) {
             Text(text = "Gasto guardado exitosamente", color = MaterialTheme.colorScheme.primary)
         }
-        // Obtener el dinero actual desde el ViewModel
-        val dineroActual by moneyViewModel.dinero.observeAsState(initial = null)
+
         Button(
             onClick = {
-                // Limpiar error y mensaje de éxito al iniciar el guardado
                 errorMessage = ""
                 showSuccessMessage = false
-
-                val valorGasto = expenseValue.toDoubleOrNull()
+                val valorGasto = expenseValue.toIntOrNull()
 
                 // Validaciones
-                when {
-                    expenseName.isBlank() -> {
-                        errorMessage = "Por favor ingresa un nombre válido."
-                    }
-                    valorGasto == null -> {
-                        errorMessage = "Por favor ingresa un valor numérico válido."
-                    }
-                    valorGasto < 0 -> {
-                        errorMessage = "No se permiten valores negativos."
-                    }
-                    expenseValue.length > 7 -> {
-                        errorMessage = "El valor no puede tener más de 7 dígitos."
-                    }
-                    !expenseValue.matches(Regex("^[0-9]+\$")) -> {
-                        errorMessage = "Solo se permiten números enteros."
-                    }
-                    selectedReference == null -> {
-                        errorMessage = "Por favor selecciona una referencia."
-                    }
-                    selectedCategory.isBlank() && customCategory.isBlank() -> {
-                        errorMessage = "Por favor selecciona una categoría."
-                    }
-                    else -> {
-                        // Crear un nuevo gasto
-                        val nuevaCategoria = if (selectedCategory == "Otro") customCategory else selectedCategory
-                        val nuevoGasto = clsExpense(
-                            id = UUID.randomUUID().toString(),
-                            nombre = expenseName,
-                            valor = valorGasto,
-                            referencia = selectedReference?.nombre ?: "", // Asociar la referencia (nombre del ingreso)
-                            categoria = nuevaCategoria
-                        )
-                        try {
-                            moneyViewModel.agregarGasto(nuevoGasto) // Llamar al ViewModel para agregar el gasto
-                            // Limpiar campos
-                            expenseName = ""
-                            expenseValue = ""
-                            selectedCategory = ""
-                            customCategory = ""
-                            selectedReference = null // Limpiar la referencia seleccionada
-                            // Mostrar mensaje de éxito
-                            showSuccessMessage = true
-                        } catch (e: Exception) {
-                            errorMessage = e.message ?: "Error desconocido al agregar el gasto."
+                if (expenseName.isNotBlank() && valorGasto != null && selectedReference != null &&
+                    (selectedCategory.isNotBlank() || customCategory.isNotBlank())) {
+
+                    // Validar que la nueva categoría no esté repetida
+                    val nuevaCategoria = if (selectedCategory == "Otro") {
+                        if (customCategory.isNotBlank() && !categorias.contains(customCategory)) {
+                            customCategory.also { categorias.add(it) } // Agregar nueva categoría a la lista
+                        } else {
+                            errorMessage = "Por favor ingresa un nombre de categoría válido."
+                            return@Button
                         }
+                    } else {
+                        selectedCategory
                     }
+
+                    // Crear un nuevo gasto
+                    val nuevoGasto = clsExpense(
+                        id = UUID.randomUUID().toString(),
+                        nombre = expenseName,
+                        valor = valorGasto.toDouble(),
+                        referencia = selectedReference?.nombre ?: "",
+                        categoria = nuevaCategoria
+                    )
+
+                    // Agregar gasto
+                    moneyViewModel.agregarGasto(nuevoGasto)
+
+                    // Limpiar campos
+                    expenseName = ""
+                    expenseValue = ""
+                    selectedCategory = ""
+                    customCategory = ""
+                    selectedReference = null
+
+                    // Actualizar la lista de gastos
+                    moneyViewModel.obtenerGastos() // Actualizar lista de gastos después de agregar
+
+                    showSuccessMessage = true
+                } else {
+                    errorMessage = "Por favor ingresa un nombre válido, un valor numérico, selecciona una referencia y una categoría."
                 }
             },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text("Guardar")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Botón para volver a la pantalla anterior
         Button(
             onClick = { navController.navigateUp() },
             modifier = Modifier.fillMaxWidth()
