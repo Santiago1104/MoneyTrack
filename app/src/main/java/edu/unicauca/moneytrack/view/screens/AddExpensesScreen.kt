@@ -20,7 +20,6 @@ import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.*
-
 import androidx.compose.material3.AlertDialog
 
 @Composable
@@ -43,11 +42,8 @@ fun AddExpensesScreen(
     var errorMessage by remember { mutableStateOf("") }
     var showSuccessMessage by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) } // Controla el cuadro de diálogo emergente
-
-    // Mensaje del cuadro de diálogo
+// Mensaje del cuadro de diálogo
     var dialogMessage by remember { mutableStateOf("") }
-
-    // Lista de categorías
     var categorias by remember { mutableStateOf(mutableListOf("Transporte", "Alimentación", "Servicios", "Arriendo")) }
 
     Column(
@@ -122,7 +118,7 @@ fun AddExpensesScreen(
             DropdownMenu(
                 expanded = expandedCategory,
                 onDismissRequest = { expandedCategory = false }
-            ) {
+            ) {                // Mostrar categorías existentes
                 categorias.forEach { categoria ->
                     DropdownMenuItem(
                         text = { Text(text = categoria) },
@@ -133,6 +129,7 @@ fun AddExpensesScreen(
                         }
                     )
                 }
+                // Opción para agregar una nueva categoría
                 DropdownMenuItem(
                     text = { Text(text = "Otro") },
                     onClick = {
@@ -149,6 +146,7 @@ fun AddExpensesScreen(
         TextField(
             value = expenseValue,
             onValueChange = {
+                // Validar que solo se ingresen números enteros y que no sean negativos
                 if (it.all { char -> char.isDigit() } && it.length <= 7) {
                     expenseValue = it
                 }
@@ -159,7 +157,6 @@ fun AddExpensesScreen(
         )
 
         Spacer(modifier = Modifier.height(32.dp))
-
         // Botón de guardar
         Button(
             onClick = {
@@ -170,7 +167,6 @@ fun AddExpensesScreen(
                 // Validaciones
                 if (expenseName.isNotBlank() && valorGasto != null && selectedReference != null &&
                     (selectedCategory.isNotBlank() || customCategory.isNotBlank())) {
-
                     // Validar y agregar la nueva categoría a la lista si es necesario
                     val nuevaCategoria = if (selectedCategory == "Otro") {
                         if (customCategory.isNotBlank() && !categorias.contains(customCategory)) {
@@ -192,35 +188,26 @@ fun AddExpensesScreen(
                         valor = valorGasto.toDouble(),
                         referencia = selectedReference?.nombre ?: "",
                         categoria = nuevaCategoria
-                    )
-
-                    // Agregar el nuevo gasto
-                    moneyViewModel.agregarGasto(nuevoGasto)
-
-                    // Limpiar los campos
+                    )    // Agregar el nuevo gasto
+                    moneyViewModel.agregarGasto(nuevoGasto)     // Limpiar los campos
                     expenseName = ""
                     expenseValue = ""
                     selectedCategory = ""
                     customCategory = ""
-                    selectedReference = null
-
-                    // Mostrar el cuadro de diálogo de éxito
+                    selectedReference = null// Mostrar el cuadro de diálogo de éxito
                     dialogMessage = "Gasto guardado exitosamente"
                     showDialog = true
                     showSuccessMessage = true
-
                 } else {
                     errorMessage = "Por favor ingresa un nombre válido, un valor numérico, selecciona una referencia y una categoría."
                     dialogMessage = errorMessage // Actualizar el mensaje de error
                     showDialog = true // Mostrar el cuadro de diálogo de error
                 }
-            },
-            modifier = Modifier.fillMaxWidth(),
+            },  modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2A65D8)) // Color personalizado
         ) {
             Text("Guardar")
         }
-
         // Cuadro de diálogo emergente para éxito o error
         if (showDialog) {
             AlertDialog(
@@ -231,8 +218,7 @@ fun AddExpensesScreen(
                 confirmButton = { TextButton(onClick = { showDialog = false }) { Text("Cerrar") } }
             )
         }
-
-        // Después de 6 segundos, cerrar el diálogo y navegar hacia atrás
+// Después de 6 segundos, cerrar el diálogo y navegar hacia atrás
         LaunchedEffect(showDialog) {
             if (showDialog) {
                 delay(6000) // Espera de 6 segundos

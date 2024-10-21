@@ -31,7 +31,6 @@ fun EditExpensesScreen(
 
     // Buscar el gasto que se va a editar
     val expenseToEdit = listaGastos.find { it.id == expenseId }
-
     // Inicializar los campos del formulario con los datos del gasto
     var expenseName by remember(expenseToEdit) { mutableStateOf(expenseToEdit?.nombre ?: "") }
     var expenseValue by remember(expenseToEdit) { mutableStateOf(expenseToEdit?.valor?.toInt()?.toString() ?: "") }
@@ -169,7 +168,6 @@ fun EditExpensesScreen(
         if (showSuccessMessage) {
             Text(text = "Gasto actualizado exitosamente", color = MaterialTheme.colorScheme.primary)
         }
-
         // Contenedor para los botones
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -181,11 +179,9 @@ fun EditExpensesScreen(
                     errorMessage = ""
                     showSuccessMessage = false
                     val valorGasto = expenseValue.toIntOrNull()
-
                     // Validaciones
                     if (expenseName.isNotBlank() && valorGasto != null && selectedReference != null &&
                         (selectedCategory.isNotBlank() || customCategory.isNotBlank())) {
-
                         // Validar que la nueva categoría no esté repetida
                         val nuevaCategoria = if (selectedCategory == "Otro") {
                             if (customCategory.isNotBlank() && !categorias.contains(customCategory)) {
@@ -197,7 +193,6 @@ fun EditExpensesScreen(
                         } else {
                             selectedCategory
                         }
-
                         // Actualizar el gasto
                         val updatedGasto = expenseToEdit?.copy(
                             nombre = expenseName,
@@ -206,7 +201,6 @@ fun EditExpensesScreen(
                             categoria = nuevaCategoria,
                             fecha = System.currentTimeMillis().toString() // Cambiar la fecha a la fecha actual
                         )
-
                         if (updatedGasto != null) {
                             moneyViewModel.actualizarGasto(updatedGasto) // Actualizar gasto
                             showSuccessMessage = true
