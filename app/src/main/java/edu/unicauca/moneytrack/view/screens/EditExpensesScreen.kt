@@ -9,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -17,7 +18,6 @@ import edu.unicauca.moneytrack.model.clsEntry
 import edu.unicauca.moneytrack.model.clsExpense
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
 import java.util.UUID
-
 
 @Composable
 fun EditExpensesScreen(
@@ -32,7 +32,7 @@ fun EditExpensesScreen(
     // Buscar el gasto que se va a editar
     val expenseToEdit = listaGastos.find { it.id == expenseId }
 
-    // Inicializar los campos del formulario  con los datos del gasto
+    // Inicializar los campos del formulario con los datos del gasto
     var expenseName by remember(expenseToEdit) { mutableStateOf(expenseToEdit?.nombre ?: "") }
     var expenseValue by remember(expenseToEdit) { mutableStateOf(expenseToEdit?.valor?.toInt()?.toString() ?: "") }
     var selectedCategory by remember(expenseToEdit) { mutableStateOf(expenseToEdit?.categoria ?: "") }
@@ -170,74 +170,73 @@ fun EditExpensesScreen(
             Text(text = "Gasto actualizado exitosamente", color = MaterialTheme.colorScheme.primary)
         }
 
-        // Botón para actualizar el gasto
-        Button(
-            onClick = {
-                errorMessage = ""
-                showSuccessMessage = false
-                val valorGasto = expenseValue.toIntOrNull()
+        // Contenedor para los botones
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween // Espaciado entre botones
+        ) {
+            // Botón para actualizar el gasto
+            Button(
+                onClick = {
+                    errorMessage = ""
+                    showSuccessMessage = false
+                    val valorGasto = expenseValue.toIntOrNull()
 
-                // Validaciones
-                if (expenseName.isNotBlank() && valorGasto != null && selectedReference != null &&
-                    (selectedCategory.isNotBlank() || customCategory.isNotBlank())) {
+                    // Validaciones
+                    if (expenseName.isNotBlank() && valorGasto != null && selectedReference != null &&
+                        (selectedCategory.isNotBlank() || customCategory.isNotBlank())) {
 
-                    // Validar que la nueva categoría no esté repetida
-                    val nuevaCategoria = if (selectedCategory == "Otro") {
-                        if (customCategory.isNotBlank() && !categorias.contains(customCategory)) {
-                            customCategory.also { categorias.add(it) } // Agregar nueva categoría a la lista
+                        // Validar que la nueva categoría no esté repetida
+                        val nuevaCategoria = if (selectedCategory == "Otro") {
+                            if (customCategory.isNotBlank() && !categorias.contains(customCategory)) {
+                                customCategory.also { categorias.add(it) } // Agregar nueva categoría a la lista
+                            } else {
+                                errorMessage = "Por favor ingresa un nombre de categoría válido."
+                                return@Button
+                            }
                         } else {
-                            errorMessage = "Por favor ingresa un nombre de categoría válido."
-                            return@Button
+                            selectedCategory
+                        }
+
+                        // Actualizar el gasto
+                        val updatedGasto = expenseToEdit?.copy(
+                            nombre = expenseName,
+                            valor = valorGasto.toDouble(),
+                            referencia = selectedReference?.nombre ?: "",
+                            categoria = nuevaCategoria,
+                            fecha = System.currentTimeMillis().toString() // Cambiar la fecha a la fecha actual
+                        )
+
+                        if (updatedGasto != null) {
+                            moneyViewModel.actualizarGasto(updatedGasto) // Actualizar gasto
+                            showSuccessMessage = true
+                            navController.navigateUp() // Navegar hacia atrás después de guardar
                         }
                     } else {
-                        selectedCategory
+                        errorMessage = "Por favor ingresa un nombre válido, un valor numérico, selecciona una referencia y una categoría."
                     }
+                },
+                modifier = Modifier.weight(1f), // Para que tome el mismo espacio que el botón de eliminar
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2A65D8)) // Color personalizado
+            ) {
+                Text("Guardar")
+            }
 
-                    // Actualizar el gasto
-                    val updatedGasto = expenseToEdit?.copy(
-                        nombre = expenseName,
-                        valor = valorGasto.toDouble(),
-                        referencia = selectedReference?.nombre ?: "",
-                        categoria = nuevaCategoria
-                    )
+            Spacer(modifier = Modifier.width(16.dp)) // Espacio entre botones
 
-                    if (updatedGasto != null) {
-                        moneyViewModel.actualizarGasto(updatedGasto) // Actualizar gasto
-                        showSuccessMessage = true
+            // Botón para eliminar el gasto
+            Button(
+                onClick = {
+                    expenseToEdit?.let {
+                        moneyViewModel.borrarGasto(it.id) // Eliminar el gasto
+                        navController.navigateUp() // Volver a la pantalla anterior después de eliminar
                     }
-                } else {
-                    errorMessage = "Por favor ingresa un nombre válido, un valor numérico, selecciona una referencia y una categoría."
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Guardar")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Botón para eliminar el gasto
-        Button(
-            onClick = {
-                expenseToEdit?.let {
-                    moneyViewModel.borrarGasto(it.id) // Eliminar el gasto
-                    navController.navigateUp() // Volver a la pantalla anterior después de eliminar
-                }
-            },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-        ) {
-            Text("Eliminar Gasto")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Botón para volver
-        Button(
-            onClick = { navController.navigateUp() },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Volver")
+                },
+                modifier = Modifier.weight(1f),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+            ) {
+                Text("Eliminar Gasto")
+            }
         }
     }
 }
