@@ -17,6 +17,8 @@ import edu.unicauca.moneytrack.model.clsEntry
 import edu.unicauca.moneytrack.model.clsExpense
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
 import java.util.UUID
+
+
 @Composable
 fun EditExpensesScreen(
     navController: NavController,
@@ -30,12 +32,12 @@ fun EditExpensesScreen(
     // Buscar el gasto que se va a editar
     val expenseToEdit = listaGastos.find { it.id == expenseId }
 
-    // Variables de estado para los campos
-    var expenseName by remember { mutableStateOf(expenseToEdit?.nombre ?: "") }
-    var expenseValue by remember { mutableStateOf(expenseToEdit?.valor?.toInt()?.toString() ?: "") }
-    var selectedCategory by remember { mutableStateOf(expenseToEdit?.categoria ?: "") }
-    var customCategory by remember { mutableStateOf("") }
-    var selectedReference by remember { mutableStateOf<clsEntry?>(null) }
+    // Inicializar los campos del formulario  con los datos del gasto
+    var expenseName by remember(expenseToEdit) { mutableStateOf(expenseToEdit?.nombre ?: "") }
+    var expenseValue by remember(expenseToEdit) { mutableStateOf(expenseToEdit?.valor?.toInt()?.toString() ?: "") }
+    var selectedCategory by remember(expenseToEdit) { mutableStateOf(expenseToEdit?.categoria ?: "") }
+    var customCategory by remember(expenseToEdit) { mutableStateOf("") }
+    var selectedReference by remember(expenseToEdit) { mutableStateOf<clsEntry?>(null) }
     var expandedReference by remember { mutableStateOf(false) }
     var expandedCategory by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
@@ -43,7 +45,7 @@ fun EditExpensesScreen(
 
     val categorias = mutableListOf("Transporte", "Alimentación", "Servicios", "Arriendo")
 
-    // Cargar la referencia actual
+    // Cargar la referencia actual una vez que se carga el gasto
     LaunchedEffect(expenseToEdit) {
         selectedReference = listaIngresos.find { it.nombre == expenseToEdit?.referencia }
     }
@@ -201,17 +203,6 @@ fun EditExpensesScreen(
 
                     if (updatedGasto != null) {
                         moneyViewModel.actualizarGasto(updatedGasto) // Actualizar gasto
-
-                        // Limpiar campos
-                        expenseName = ""
-                        expenseValue = ""
-                        selectedCategory = ""
-                        customCategory = ""
-                        selectedReference = null
-
-                        // Actualizar la lista de gastos
-                        moneyViewModel.obtenerGastos() // Actualizar lista de gastos después de agregar
-
                         showSuccessMessage = true
                     }
                 } else {
