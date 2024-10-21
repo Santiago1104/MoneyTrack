@@ -32,13 +32,15 @@ class MoneyViewModel:ViewModel (){
     }
 
     fun obtenerGastos() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val resultado = db.collection("gastos").get().await()
-                val gastos = resultado.documents.mapNotNull { it.toObject(clsExpense::class.java) }
-                _listaGastos.postValue(gastos)
-            } catch (e: Exception) {
+        db.collection("gastos").addSnapshotListener { snapshot, e ->
+            if (e != null) {
                 e.printStackTrace()
+                return@addSnapshotListener
+            }
+
+            if (snapshot != null) {
+                val gastos = snapshot.documents.mapNotNull { it.toObject(clsExpense::class.java) }
+                _listaGastos.postValue(gastos)
             }
         }
     }
@@ -77,13 +79,15 @@ class MoneyViewModel:ViewModel (){
     }
 
     fun obtenerIngresos() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val resultado = db.collection("ingresos").get().await()
-                val ingresos = resultado.documents.mapNotNull { it.toObject(clsEntry::class.java) }
-                _listaIngresos.postValue(ingresos)
-            } catch (e: Exception) {
+        db.collection("ingresos").addSnapshotListener { snapshot, e ->
+            if (e != null) {
                 e.printStackTrace()
+                return@addSnapshotListener
+            }
+
+            if (snapshot != null) {
+                val ingresos = snapshot.documents.mapNotNull { it.toObject(clsEntry::class.java) }
+                _listaIngresos.postValue(ingresos)
             }
         }
     }

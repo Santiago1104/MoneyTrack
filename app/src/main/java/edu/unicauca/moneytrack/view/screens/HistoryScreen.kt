@@ -9,7 +9,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -21,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
+
 @Composable
 fun TransactionHistoryScreen(
     navController: NavController,
@@ -43,7 +43,7 @@ fun TransactionHistoryScreen(
     ) {
         // Título
         Text(
-            text = "Historial",
+            text = "Historial de Transacciones",
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 8.dp)
@@ -82,7 +82,6 @@ fun TransactionHistoryScreen(
         }
     }
 }
-
 
 @Composable
 fun TransactionItem(
