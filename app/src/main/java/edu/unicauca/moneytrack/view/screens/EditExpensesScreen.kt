@@ -17,7 +17,6 @@ import edu.unicauca.moneytrack.model.clsEntry
 import edu.unicauca.moneytrack.model.clsExpense
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
 import java.util.UUID
-
 @Composable
 fun EditExpensesScreen(
     navController: NavController,
@@ -169,6 +168,7 @@ fun EditExpensesScreen(
             Text(text = "Gasto actualizado exitosamente", color = MaterialTheme.colorScheme.primary)
         }
 
+        // Botón para actualizar el gasto
         Button(
             onClick = {
                 errorMessage = ""
@@ -220,11 +220,28 @@ fun EditExpensesScreen(
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Actualizar")
+            Text("Guardar")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Botón para eliminar el gasto
+        Button(
+            onClick = {
+                expenseToEdit?.let {
+                    moneyViewModel.borrarGasto(it.id) // Eliminar el gasto
+                    navController.navigateUp() // Volver a la pantalla anterior después de eliminar
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+        ) {
+            Text("Eliminar Gasto")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Botón para volver
         Button(
             onClick = { navController.navigateUp() },
             modifier = Modifier.fillMaxWidth()

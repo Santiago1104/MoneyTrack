@@ -25,10 +25,34 @@ class MoneyViewModel:ViewModel (){
 
     private var _dinero = MutableLiveData<clsMoney?>()
     val dinero: MutableLiveData<clsMoney?> = _dinero
-
     init {
-        obtenerGastos()
-        obtenerIngresos()
+        configurarListeners()
+    }
+
+    private fun configurarListeners() {
+        // Listener para la colección de gastos
+        db.collection("gastos").addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                // Manejar el error
+                e.printStackTrace()
+                return@addSnapshotListener
+            }
+
+            val gastos = snapshot?.documents?.mapNotNull { it.toObject(clsExpense::class.java) } ?: emptyList()
+            _listaGastos.postValue(gastos)
+        }
+
+        // Listener para la colección de ingresos
+        db.collection("ingresos").addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                // Manejar el error
+                e.printStackTrace()
+                return@addSnapshotListener
+            }
+
+            val ingresos = snapshot?.documents?.mapNotNull { it.toObject(clsEntry::class.java) } ?: emptyList()
+            _listaIngresos.postValue(ingresos)
+        }
     }
 
     fun obtenerGastos() {
