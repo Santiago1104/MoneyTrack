@@ -100,50 +100,37 @@ fun NuevoIngresoScreen(
         Button(
             onClick = {
                 val valorIngreso = valor.text.toDoubleOrNull()
-
-                // Validación para nombres duplicados
-                val ingresoExistente = viewModel.listaIngresos.value?.any { it.nombre == referencia.text }
-
                 // Validaciones
-                when {
-                    valorIngreso == null -> {
-                        errorMensaje = "Por favor, ingrese un valor válido"
-                    }
-                    valorIngreso < 0 -> {
-                        errorMensaje = "No se permiten valores negativos"
-                    }
-                    valor.text.length > 7 -> {
-                        errorMensaje = "El número no puede tener más de 7 dígitos"
-                    }
-                    !valor.text.matches(Regex("^[0-9]+\$")) -> {
-                        errorMensaje = "Solo se permiten números enteros"
-                    }
-                    ingresoExistente == true -> {
-                        errorMensaje = "Ya existe un ingreso con este nombre. Por favor, ingrese uno diferente."
-                    }
-                    else -> {
-                        // Obtener la fecha actual en formato personalizado
-                        val formatoFecha = SimpleDateFormat("dd/MM/yyyy")
-                        val fechaActual = formatoFecha.format(Date())
+                if (valorIngreso == null) {
+                    errorMensaje = "Por favor, ingrese un valor válido"
+                } else if (valorIngreso < 0) {
+                    errorMensaje = "No se permiten valores negativos"
+                } else if (valor.text.length > 7) {
+                    errorMensaje = "El número no puede tener más de 7 dígitos"
+                } else if (!valor.text.matches(Regex("^[0-9]+\$"))) {
+                    errorMensaje = "Solo se permiten números enteros"
+                } else {
+                    // Obtener la fecha actual en formato personalizado
+                    val formatoFecha = SimpleDateFormat("dd/MM/yyyy")
+                    val fechaActual = formatoFecha.format(Date())
 
-                        // Guardar el ingreso si el valor es válido
-                        viewModel.agregarIngreso(
-                            clsEntry(
-                                id = "",
-                                nombre = referencia.text,
-                                valor = valorIngreso.toDouble(),
-                                fecha = fechaActual
-                            )
+                    // Guardar el ingreso si el valor es válido
+                    viewModel.agregarIngreso(
+                        clsEntry(
+                            id = "",
+                            nombre = referencia.text,
+                            valor = valorIngreso.toDouble(),
+                            fecha = fechaActual
                         )
-                        onIngresoGuardado() // Navegar después de guardar
-                        errorMensaje = null // Limpiar error después de guardado
-                    }
+                    )
+                    onIngresoGuardado() // Navegar después de guardar
+                    errorMensaje = null // Limpiar error después de guardado
                 }
             },
             modifier = Modifier
-                .width(100.dp)
-                .height(48.dp),
-            shape = RoundedCornerShape(8.dp),
+                .width(150.dp)
+                .height(40.dp),
+            shape = RoundedCornerShape(50.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2A65D8))
         ) {
             Text("Guardar")

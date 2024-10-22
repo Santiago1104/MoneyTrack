@@ -116,56 +116,42 @@ fun EditarIngresoScreen(
                     onIngresoEditado() // Navegar de vuelta después de eliminar
                 },
                 modifier = Modifier
-                    .width(100.dp)
-                    .height(48.dp),
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2A65D8))
+                    .width(150.dp)
+                    .height(40.dp),
+                shape = RoundedCornerShape(50.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFec5353))
             ) {
                 Text("Eliminar")
             }
 
             Button(
                 onClick = {
-                    val valorIngreso = valor.text.toDoubleOrNull()
-
-                    // Validación de nombres duplicados (excepto el ingreso actual)
-                    val ingresoExistente = viewModel.listaIngresos.value?.any {
-                        it.nombre == referencia.text && it.id != ingreso.id
-                    }
+                    val valorIngreso = valor.text.toDouble()
 
                     // Validaciones
-                    when {
-                        valorIngreso == null -> {
-                            errorMensaje = "Por favor, ingrese un valor válido"
-                        }
-                        valorIngreso < 0 -> {
-                            errorMensaje = "No se permiten valores negativos"
-                        }
-                        valor.text.length > 7 -> {
-                            errorMensaje = "El número no puede tener más de 7 dígitos"
-                        }
-                        !valor.text.matches(Regex("^[0-9]+\$")) -> {
-                            errorMensaje = "Solo se permiten números enteros"
-                        }
-                        ingresoExistente == true -> {
-                            errorMensaje = "Ya existe un ingreso con este nombre. Por favor, ingrese uno diferente."
-                        }
-                        else -> {
-                            // Actualizar el ingreso si el valor es válido
-                            val updatedIngreso = ingreso.copy(
-                                nombre = referencia.text,
-                                valor = valorIngreso.toDouble()
-                            )
-                            viewModel.actualizarIngreso(updatedIngreso)
-                            onIngresoEditado() // Navegar de vuelta después de guardar
-                            errorMensaje = null // Limpiar error después de guardar
-                        }
+                    if (valorIngreso == null) {
+                        errorMensaje = "Por favor, ingrese un valor válido"
+                    } else if (valorIngreso < 0) {
+                        errorMensaje = "No se permiten valores negativos"
+                    } else if (valor.text.length > 7) {
+                        errorMensaje = "El número no puede tener más de 7 dígitos"
+                    } else if (!valor.text.matches(Regex("^[0-9]+\$"))) {
+                        errorMensaje = "Solo se permiten números enteros"
+                    } else {
+                        // Actualizar el ingreso si el valor es válido
+                        val updatedIngreso = ingreso.copy(
+                            nombre = referencia.text,
+                            valor = valorIngreso.toDouble()
+                        )
+                        viewModel.actualizarIngreso(updatedIngreso)
+                        onIngresoEditado() // Navegar de vuelta después de guardar
+                        errorMensaje = null // Limpiar error después de guardar
                     }
                 },
                 modifier = Modifier
-                    .width(100.dp)
-                    .height(48.dp),
-                shape = RoundedCornerShape(8.dp),
+                    .width(150.dp)
+                    .height(40.dp),
+                shape = RoundedCornerShape(50.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2A65D8))
             ) {
                 Text("Guardar")
