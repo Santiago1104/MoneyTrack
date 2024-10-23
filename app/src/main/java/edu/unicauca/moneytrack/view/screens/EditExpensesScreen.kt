@@ -1,6 +1,7 @@
 package edu.unicauca.moneytrack.view.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -50,89 +51,135 @@ fun EditExpensesScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
     ) {
-        Text(text = "Editar Gasto", style = MaterialTheme.typography.headlineLarge, modifier = Modifier.padding(bottom = 32.dp))
-
-        // Campo de nombre del gasto con validación
-        TextField(
-            value = expenseName,
-            onValueChange = {
-                if (!it.all { char -> char.isDigit() }) { // Validar que no sea numérico
-                    expenseName = it
-                } else {
-                    errorMessage = "El nombre del gasto no puede ser numérico."
-                }
-            },
-            label = { Text("Nombre del Gasto") },
-            modifier = Modifier.fillMaxWidth()
+        Text(
+            text = "Editar Gasto",
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(top = 24.dp, bottom = 24.dp)
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Campo para seleccionar o ingresar la categoría
-        Box {
-            TextField(
-                value = if (selectedCategory == "Otro") customCategory else selectedCategory,
-                onValueChange = {
-                    if (selectedCategory == "Otro") {
+        Card(
+            shape = RoundedCornerShape(12.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp), // Margen interno más amplio para dar más espacio
+                horizontalAlignment = Alignment.Start
+            ) {
+                // Campo de nombre del gasto con validación
+                TextField(
+                    value = expenseName,
+                    onValueChange = {
                         if (!it.all { char -> char.isDigit() }) { // Validar que no sea numérico
-                            customCategory = it
+                            expenseName = it
                         } else {
-                            errorMessage = "La categoría no puede ser numérica."
+                            errorMessage = "El nombre del gasto no puede ser numérico."
                         }
-                    }
-                },
-                label = { Text("Categoría") },
-                modifier = Modifier.fillMaxWidth(),
-                readOnly = selectedCategory != "Otro",
-                trailingIcon = {
-                    IconButton(onClick = { expandedCategory = !expandedCategory }) {
-                        Icon(Icons.Default.ArrowDropDown, contentDescription = "Select Category")
+                    },
+                    label = { Text("Nombre del Gasto", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onBackground
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Selección de categoría
+                Box {
+                    TextField(
+                        value = if (selectedCategory == "Otro") customCategory else selectedCategory,
+                        onValueChange = {
+                            if (selectedCategory == "Otro") {
+                                if (!it.all { char -> char.isDigit() }) { // Validar que no sea numérico
+                                    customCategory = it
+                                } else {
+                                    errorMessage = "La categoría no puede ser numérica."
+                                }
+                            }
+                        },
+                        label = { Text("Categoría", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                        modifier = Modifier.fillMaxWidth(),
+                        readOnly = selectedCategory != "Otro",
+                        trailingIcon = {
+                            IconButton(onClick = { expandedCategory = !expandedCategory }) {
+                                Icon(Icons.Default.ArrowDropDown, contentDescription = "Seleccionar Categoría")
+                            }
+                        },
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onBackground
+                        )
+                    )
+                    DropdownMenu(
+                        expanded = expandedCategory,
+                        onDismissRequest = { expandedCategory = false }
+                    ) {
+                        categorias.forEach { categoria ->
+                            DropdownMenuItem(
+                                text = { Text(text = categoria) },
+                                onClick = {
+                                    selectedCategory = categoria
+                                    expandedCategory = false
+                                    if (categoria != "Otro") customCategory = ""
+                                }
+                            )
+                        }
+                        DropdownMenuItem(
+                            text = { Text(text = "Otro") },
+                            onClick = {
+                                selectedCategory = "Otro"
+                                expandedCategory = false
+                            }
+                        )
                     }
                 }
-            )
-            DropdownMenu(expanded = expandedCategory, onDismissRequest = { expandedCategory = false }) {
-                categorias.forEach { categoria ->
-                    DropdownMenuItem(text = { Text(text = categoria) }, onClick = {
-                        selectedCategory = categoria
-                        expandedCategory = false
-                        if (categoria != "Otro") customCategory = ""
-                    })
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Campo de valor del gasto
+                TextField(
+                    value = expenseValue,
+                    onValueChange = {
+                        if (it.all { char -> char.isDigit() } && it.length <= 7) { // Validar solo números enteros no negativos
+                            expenseValue = it
+                        } else {
+                            errorMessage = "El valor debe ser un número entero no negativo."
+                        }
+                    },
+                    label = { Text("Valor en Pesos", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onBackground
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // Mensaje de error
+                if (errorMessage.isNotEmpty()) {
+                    Text(text = errorMessage, color = MaterialTheme.colorScheme.error)
                 }
-                DropdownMenuItem(text = { Text(text = "Otro") }, onClick = {
-                    selectedCategory = "Otro"
-                    expandedCategory = false
-                })
             }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Campo de valor del gasto con validación de entero no negativo
-        TextField(
-            value = expenseValue,
-            onValueChange = {
-                if (it.all { char -> char.isDigit() } && it.length <= 7) { // Validar solo números enteros no negativos
-                    expenseValue = it
-                } else {
-                    errorMessage = "El valor debe ser un número entero no negativo."
-                }
-            },
-            label = { Text("Valor en Pesos") },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        if (errorMessage.isNotEmpty()) {
-            Text(text = errorMessage, color = MaterialTheme.colorScheme.error)
-        }
-        if (showSuccessMessage) {
-            Text(text = "Gasto actualizado exitosamente", color = MaterialTheme.colorScheme.primary)
         }
 
         Row(
@@ -180,7 +227,7 @@ fun EditExpensesScreen(
                     }
                 },
                 modifier = Modifier.weight(1f),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2A65D8))
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2A65D8)) // Color personalizado
             ) {
                 Text("Guardar")
             }

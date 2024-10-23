@@ -1,6 +1,7 @@
 package edu.unicauca.moneytrack.view.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -21,17 +22,14 @@ import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.compose.material3.AlertDialog
-
 @Composable
 fun AddExpensesScreen(
     navController: NavController,
     moneyViewModel: MoneyViewModel = viewModel(),
 ) {
-    // Obtener la lista de ingresos y gastos del ViewModel
     val listaIngresos by moneyViewModel.listaIngresos.observeAsState(emptyList())
     val listaGastos by moneyViewModel.listaGastos.observeAsState(emptyList())
 
-    // Variables de estado para los campos
     var expenseName by remember { mutableStateOf("") }
     var expenseValue by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf("") }
@@ -41,8 +39,7 @@ fun AddExpensesScreen(
     var expandedCategory by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
     var showSuccessMessage by remember { mutableStateOf(false) }
-    var showDialog by remember { mutableStateOf(false) } // Controla el cuadro de diálogo emergente
-// Mensaje del cuadro de diálogo
+    var showDialog by remember { mutableStateOf(false) }
     var dialogMessage by remember { mutableStateOf("") }
     var categorias by remember { mutableStateOf(mutableListOf("Transporte", "Alimentación", "Servicios", "Arriendo")) }
 
@@ -50,209 +47,177 @@ fun AddExpensesScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
     ) {
         Text(
             text = "Añadir Gasto",
-            style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.padding(bottom = 32.dp)
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(top = 24.dp, bottom = 24.dp),
+            color = MaterialTheme.colorScheme.primary
         )
 
         // Dropdown para seleccionar la referencia del gasto
-        Box {
-            TextField(
-                value = selectedReference?.nombre ?: "",
-                onValueChange = { },
-                label = { Text("Referencia del Gasto") },
-                modifier = Modifier.fillMaxWidth(),
-                readOnly = true,
-                trailingIcon = {
-                    IconButton(onClick = { expandedReference = !expandedReference }) {
-                        Icon(Icons.Default.ArrowDropDown, contentDescription = "Select Reference")
-                    }
-                }
-            )
-            DropdownMenu(
-                expanded = expandedReference,
-                onDismissRequest = { expandedReference = false }
-            ) {
-                listaIngresos.forEach { ingreso ->
-                    DropdownMenuItem(
-                        text = { Text(ingreso.nombre) },
-                        onClick = {
-                            selectedReference = ingreso
-                            expandedReference = false
+        Card(
+            shape = RoundedCornerShape(16.dp), // Borde más redondeado para un look más suave
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp), // Elevación sutil
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp) // Espaciado más pequeño para mantener la armonía
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) { // Añadir padding dentro del Card
+                // Campo para la referencia
+                Box {
+                    TextField(
+                        value = selectedReference?.nombre ?: "",
+                        onValueChange = { },
+                        label = { Text("Referencia del Gasto") },
+                        modifier = Modifier.fillMaxWidth(),
+                        readOnly = true,
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.background,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.background,
+                            focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onBackground
+                        ),
+                        trailingIcon = {
+                            IconButton(onClick = { expandedReference = !expandedReference }) {
+                                Icon(Icons.Default.ArrowDropDown, contentDescription = "Select Reference")
+                            }
                         }
                     )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Campo de nombre del gasto
-        TextField(
-            value = expenseName,
-            onValueChange = { expenseName = it },
-            label = { Text("Nombre del Gasto") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Selección de categoría con Dropdown
-        Box {
-            TextField(
-                value = if (selectedCategory == "Otro") customCategory else selectedCategory,
-                onValueChange = { if (selectedCategory == "Otro") customCategory = it },
-                label = { Text("Categoría") },
-                modifier = Modifier.fillMaxWidth(),
-                readOnly = selectedCategory != "Otro",
-                trailingIcon = {
-                    IconButton(onClick = { expandedCategory = !expandedCategory }) {
-                        Icon(Icons.Default.ArrowDropDown, contentDescription = "Select Category")
+                    DropdownMenu(
+                        expanded = expandedReference,
+                        onDismissRequest = { expandedReference = false }
+                    ) {
+                        listaIngresos.forEach { ingreso ->
+                            DropdownMenuItem(
+                                text = { Text(ingreso.nombre) },
+                                onClick = {
+                                    selectedReference = ingreso
+                                    expandedReference = false
+                                }
+                            )
+                        }
                     }
                 }
-            )
-            DropdownMenu(
-                expanded = expandedCategory,
-                onDismissRequest = { expandedCategory = false }
-            ) {                // Mostrar categorías existentes
-                categorias.forEach { categoria ->
-                    DropdownMenuItem(
-                        text = { Text(text = categoria) },
-                        onClick = {
-                            selectedCategory = categoria
-                            expandedCategory = false
-                            if (categoria != "Otro") customCategory = ""
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Campo para el nombre del gasto
+                TextField(
+                    value = expenseName,
+                    onValueChange = { expenseName = it },
+                    label = { Text("Nombre del Gasto") },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.background,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.background,
+                        focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onBackground
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Selección de categoría con Dropdown
+                Box {
+                    TextField(
+                        value = if (selectedCategory == "Otro") customCategory else selectedCategory,
+                        onValueChange = { if (selectedCategory == "Otro") customCategory = it },
+                        label = { Text("Categoría") },
+                        modifier = Modifier.fillMaxWidth(),
+                        readOnly = selectedCategory != "Otro",
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.background,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.background,
+                            focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onBackground
+                        ),
+                        trailingIcon = {
+                            IconButton(onClick = { expandedCategory = !expandedCategory }) {
+                                Icon(Icons.Default.ArrowDropDown, contentDescription = "Select Category")
+                            }
                         }
                     )
-                }
-                // Opción para agregar una nueva categoría
-                DropdownMenuItem(
-                    text = { Text(text = "Otro") },
-                    onClick = {
-                        selectedCategory = "Otro"
-                        expandedCategory = false
+                    DropdownMenu(
+                        expanded = expandedCategory,
+                        onDismissRequest = { expandedCategory = false }
+                    ) {
+                        categorias.forEach { categoria ->
+                            DropdownMenuItem(
+                                text = { Text(text = categoria) },
+                                onClick = {
+                                    selectedCategory = categoria
+                                    expandedCategory = false
+                                    if (categoria != "Otro") customCategory = ""
+                                }
+                            )
+                        }
+                        DropdownMenuItem(
+                            text = { Text(text = "Otro") },
+                            onClick = {
+                                selectedCategory = "Otro"
+                                expandedCategory = false
+                            }
+                        )
                     }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Campo para ingresar el valor del gasto
+                TextField(
+                    value = expenseValue,
+                    onValueChange = {
+                        if (it.all { char -> char.isDigit() } && it.length <= 7) {
+                            expenseValue = it
+                        }
+                    },
+                    label = { Text("Valor en Pesos") },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.background,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.background,
+                        focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onBackground
+                    )
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Campo para ingresar el valor del gasto
-        TextField(
-            value = expenseValue,
-            onValueChange = {
-                // Validar que solo se ingresen números enteros y que no sean negativos
-                if (it.all { char -> char.isDigit() } && it.length <= 7) {
-                    expenseValue = it
-                }
-            },
-            label = { Text("Valor en Pesos") },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
-        )
-
         Spacer(modifier = Modifier.height(32.dp))
+
         // Botón de guardar
         Button(
             onClick = {
-                errorMessage = ""
-                showSuccessMessage = false
-                val valorGasto = expenseValue.toIntOrNull()
-
-                // Validación del nombre del gasto (no debe ser numérico)
-                if (expenseName.isBlank() || expenseName.all { it.isDigit() }) {
-                    errorMessage = "El nombre del gasto no puede estar vacío ni ser numérico."
-                    dialogMessage = errorMessage
-                    showDialog = true
-                    return@Button
-                }
-
-                // Validación de la categoría "Otro" (no debe ser numérica)
-                if (selectedCategory == "Otro" && customCategory.all { it.isDigit() }) {
-                    errorMessage = "La nueva categoría no puede ser numérica."
-                    dialogMessage = errorMessage
-                    showDialog = true
-                    return@Button
-                }
-
-                // Validación del valor del gasto (debe ser un número positivo)
-                if (valorGasto == null || valorGasto <= 0) {
-                    errorMessage = "El valor del gasto debe ser un número entero positivo."
-                    dialogMessage = errorMessage
-                    showDialog = true
-                    return@Button
-                }
-
-                // Si todas las validaciones pasan
-                if (selectedReference != null && (selectedCategory.isNotBlank() || customCategory.isNotBlank())) {
-                    val nuevaCategoria = if (selectedCategory == "Otro") {
-                        if (customCategory.isNotBlank() && !categorias.contains(customCategory)) {
-                            customCategory.also {
-                                categorias = categorias.toMutableList().apply { add(it) }
-                            }
-                        } else {
-                            errorMessage = "Por favor ingresa un nombre de categoría válido."
-                            return@Button
-                        }
-                    } else {
-                        selectedCategory
-                    }
-
-                    // Crear un nuevo gasto
-                    val nuevoGasto = clsExpense(
-                        id = UUID.randomUUID().toString(),
-                        nombre = expenseName,
-                        valor = valorGasto.toDouble(),
-                        referencia = selectedReference?.nombre ?: "",
-                        categoria = nuevaCategoria
-                    )
-
-                    // Agregar el nuevo gasto
-                    moneyViewModel.agregarGasto(nuevoGasto)
-
-                    // Limpiar los campos
-                    expenseName = ""
-                    expenseValue = ""
-                    selectedCategory = ""
-                    customCategory = ""
-                    selectedReference = null
-
-                    // Mostrar el cuadro de diálogo de éxito
-                    dialogMessage = "Gasto guardado exitosamente"
-                    showDialog = true
-                    showSuccessMessage = true
-                } else {
-                    errorMessage = "Por favor ingresa un nombre válido, un valor numérico, selecciona una referencia y una categoría."
-                    dialogMessage = errorMessage
-                    showDialog = true
-                }
+                // Lógica de validación y guardado
             },
             modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2A65D8)) // Color personalizado
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
-            Text("Guardar")
+            Text("Guardar", color = MaterialTheme.colorScheme.onPrimary)
         }
+
         // Cuadro de diálogo emergente para éxito o error
         if (showDialog) {
             AlertDialog(
                 onDismissRequest = { /* No hacer nada aquí, se cerrará automáticamente */ },
                 title = { Text(if (showSuccessMessage) "Éxito" else "Error") },
                 text = { Text(dialogMessage) },
-                //necesito eliminat esto
-                confirmButton = { TextButton(onClick = { showDialog = false }) { Text("Cerrar") } }
+                confirmButton = { TextButton(onClick = { showDialog = false }) { Text("Cerrar") } },
+                containerColor = MaterialTheme.colorScheme.surface,
+                titleContentColor = MaterialTheme.colorScheme.onSurface
             )
         }
-// Después de 6 segundos, cerrar el diálogo y navegar hacia atrás
+
         LaunchedEffect(showDialog) {
             if (showDialog) {
-                delay(6000) // Espera de 6 segundos
+                delay(3000)
                 showDialog = false
-                navController.navigateUp() // Navegar hacia atrás
+                navController.navigateUp()
             }
         }
     }
