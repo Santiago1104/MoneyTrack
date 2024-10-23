@@ -12,4 +12,6 @@ sealed class BottomNavItem(
     object Home : BottomNavItem("home", R.string.home, R.drawable.ic_home)
     object History : BottomNavItem("history", R.string.history, R.drawable.ic_history)
     object Profile : BottomNavItem("profile", R.string.profile, R.drawable.ic_profile)
+
+
 }
