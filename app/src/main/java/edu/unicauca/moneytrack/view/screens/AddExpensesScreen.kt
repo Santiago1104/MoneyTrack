@@ -193,7 +193,70 @@ fun AddExpensesScreen(
         // Botón de guardar
         Button(
             onClick = {
-                // Lógica de validación y guardado
+                errorMessage = ""
+                showSuccessMessage = false
+                val valorGasto = expenseValue.toIntOrNull()
+                // Validación del nombre del gasto (no debe ser numérico)
+                if (expenseName.isBlank() || expenseName.all { it.isDigit() }) {
+                    errorMessage = "El nombre del gasto no puede estar vacío ni ser numérico."
+                    dialogMessage = errorMessage
+                    showDialog = true
+                    return@Button
+                }
+                // Validación de la categoría "Otro" (no debe ser numérica)
+                if (selectedCategory == "Otro" && customCategory.all { it.isDigit() }) {
+                    errorMessage = "La nueva categoría no puede ser numérica."
+                    dialogMessage = errorMessage
+                    showDialog = true
+                    return@Button
+                }
+                // Validación del valor del gasto (debe ser un número positivo)
+                if (valorGasto == null || valorGasto <= 0) {
+                    errorMessage = "El valor del gasto debe ser un número entero positivo."
+                    dialogMessage = errorMessage
+                    showDialog = true
+                    return@Button
+                }
+                // Si todas las validaciones pasan
+                if (selectedReference != null && (selectedCategory.isNotBlank() || customCategory.isNotBlank())) {
+                    val nuevaCategoria = if (selectedCategory == "Otro") {
+                        if (customCategory.isNotBlank() && !categorias.contains(customCategory)) {
+                            customCategory.also {
+                                categorias = categorias.toMutableList().apply { add(it) }
+                            }
+                        } else {
+                            errorMessage = "Por favor ingresa un nombre de categoría válido."
+                            return@Button
+                        }
+                    } else {
+                        selectedCategory
+                    }
+                    // Crear un nuevo gasto
+                    val nuevoGasto = clsExpense(
+                        id = UUID.randomUUID().toString(),
+                        nombre = expenseName,
+                        valor = valorGasto.toDouble(),
+                        referencia = selectedReference?.nombre ?: "",
+                        categoria = nuevaCategoria
+                    )
+                    // Agregar el nuevo gasto
+                    moneyViewModel.agregarGasto(nuevoGasto)
+                    // Limpiar los campos
+                    expenseName = ""
+                    expenseValue = ""
+                    selectedCategory = ""
+                    customCategory = ""
+                    selectedReference = null
+                    // Mostrar el cuadro de diálogo de éxito
+                    dialogMessage = "Gasto guardado exitosamente"
+                    showDialog = true
+                    showSuccessMessage = true
+                } else {
+                    errorMessage = "Por favor ingresa un nombre válido, un valor numérico, selecciona una referencia y una categoría."
+                    dialogMessage = errorMessage
+                    showDialog = true
+                }
+
             },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
