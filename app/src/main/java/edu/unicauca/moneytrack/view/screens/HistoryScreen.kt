@@ -21,17 +21,19 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import edu.unicauca.moneytrack.viewmodel.MoneyViewModel
+
 @Composable
 fun TransactionHistoryScreen(
     navController: NavController,
     moneyViewModel: MoneyViewModel = viewModel()
 ) {
-    // Obteniendo las listas de ingresos y gastos del ViewModel
+    // Obteniendo las listas de ingresos y gastos del ViewModel usando LiveData
     val ingresos by moneyViewModel.listaIngresos.observeAsState(emptyList())
     val gastos by moneyViewModel.listaGastos.observeAsState(emptyList())
 
-    // Combinando ingresos y gastos en una sola lista y ordenando por fecha
+    // Combinando ingresos y gastos en una sola lista y eliminando duplicados
     val transacciones = (ingresos.map { it to "Ingreso" } + gastos.map { it to "Gasto" })
+        .distinctBy { it.first.id }  // Eliminar duplicados basados en el ID
         .sortedByDescending { it.first.fecha }  // Ordenar por fecha descendente
 
     Column(
@@ -82,7 +84,6 @@ fun TransactionHistoryScreen(
         }
     }
 }
-
 
 @Composable
 fun TransactionItem(
