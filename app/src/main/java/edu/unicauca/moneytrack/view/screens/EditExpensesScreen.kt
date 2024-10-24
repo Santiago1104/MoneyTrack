@@ -11,8 +11,10 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import edu.unicauca.moneytrack.model.clsEntry
@@ -59,7 +61,9 @@ fun EditExpensesScreen(
     ) {
         Text(
             text = "Editar Gasto",
-            style = MaterialTheme.typography.headlineMedium,
+            style = MaterialTheme.typography.titleLarge,
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(top = 24.dp, bottom = 24.dp)
         )
 
