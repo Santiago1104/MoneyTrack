@@ -63,7 +63,7 @@ fun MyApp(moneyViewModel: MoneyViewModel) {
             composable("addGasto") { AddExpensesScreen(navController = navController) }
             composable("addIngreso") { NuevoIngresoScreen(
                 viewModel = moneyViewModel,
-                onIngresoGuardado = { navController.popBackStack() } // Redirige de vuelta después de guardar
+                onIngresoGuardado = { navController.popBackStack() }
             ) }
             composable("editGasto/{expenseId}") { backStackEntry ->
                 val expenseId = backStackEntry.arguments?.getString("expenseId")

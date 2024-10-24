@@ -22,6 +22,9 @@ import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.compose.material3.AlertDialog
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+
 @Composable
 fun AddExpensesScreen(
     navController: NavController,
@@ -51,10 +54,11 @@ fun AddExpensesScreen(
         verticalArrangement = Arrangement.Top
     ) {
         Text(
-            text = "Añadir Gasto",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(top = 24.dp, bottom = 24.dp),
-            color = MaterialTheme.colorScheme.primary
+            text = "Nuevo Gasto",
+            style = MaterialTheme.typography.titleLarge,
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(top = 24.dp, bottom = 16.dp)
         )
 
         // Dropdown para seleccionar la referencia del gasto
@@ -258,8 +262,11 @@ fun AddExpensesScreen(
                 }
 
             },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+            modifier = Modifier
+                .width(150.dp)
+                .height(40.dp),
+            shape = RoundedCornerShape(50.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2A65D8))
         ) {
             Text("Guardar", color = MaterialTheme.colorScheme.onPrimary)
         }
