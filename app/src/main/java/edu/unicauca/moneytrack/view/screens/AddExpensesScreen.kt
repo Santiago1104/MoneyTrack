@@ -58,7 +58,7 @@ fun AddExpensesScreen(
             style = MaterialTheme.typography.titleLarge,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(top = 24.dp, bottom = 16.dp)
+            modifier = Modifier.padding(top = 24.dp, bottom = 16.dp )
         )
 
         // Dropdown para seleccionar la referencia del gasto
