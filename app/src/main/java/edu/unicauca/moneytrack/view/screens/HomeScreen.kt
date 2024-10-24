@@ -55,31 +55,16 @@ fun HomeScreen(
 
     when {
         totalIngresos > totalGastos -> {
-            financialAdvice = """
-                ¡Felicitaciones! Estás ganando más de lo que gastas.
-                Aquí algunos consejos:
-                1. Considera aumentar tus ahorros o invertir ese excedente.
-                2. Usa tus ingresos extra para pagar deudas si las tienes.
-                3. Revisa oportunidades para generar ingresos pasivos.
-            """.trimIndent()
+            financialAdvice =
+                stringResource(R.string.felicitaciones_est_s_ganando_m_s_de_lo_que_gastas_aqu_algunos_consejos_1_considera_aumentar_tus_ahorros_o_invertir_ese_excedente_2_usa_tus_ingresos_extra_para_pagar_deudas_si_las_tienes_3_revisa_oportunidades_para_generar_ingresos_pasivos).trimIndent()
         }
         totalGastos > totalIngresos -> {
-            financialAdvice = """
-                Cuidado, estás gastando más de lo que ganas.
-                Aquí algunos consejos:
-                1. Revisa tus gastos y elimina aquellos innecesarios.
-                2. Crea un presupuesto y ajusta tu estilo de vida para no gastar de más.
-                3. Considera aumentar tus ingresos buscando un trabajo adicional o freelance.
-            """.trimIndent()
+            financialAdvice =
+                stringResource(R.string.cuidado_est_s_gastando_m_s_de_lo_que_ganas_aqu_algunos_consejos_1_revisa_tus_gastos_y_elimina_aquellos_innecesarios_2_crea_un_presupuesto_y_ajusta_tu_estilo_de_vida_para_no_gastar_de_m_s_3_considera_aumentar_tus_ingresos_buscando_un_trabajo_adicional_o_freelance).trimIndent()
         }
         else -> {
-            financialAdvice = """
-                Tus ingresos y gastos están equilibrados, pero puedes mejorar tu estabilidad financiera.
-                Aquí algunos consejos:
-                1. Ahorra al menos el 10% de tus ingresos para emergencias.
-                2. Busca formas de diversificar tus fuentes de ingreso.
-                3. Controla tus gastos y no gastes más de lo que realmente necesitas.
-            """.trimIndent()
+            financialAdvice =
+                stringResource(R.string.tus_ingresos_y_gastos_est_n_equilibrados_pero_puedes_mejorar_tu_estabilidad_financiera_aqu_algunos_consejos_1_ahorra_al_menos_el_10_de_tus_ingresos_para_emergencias_2_busca_formas_de_diversificar_tus_fuentes_de_ingreso_3_controla_tus_gastos_y_no_gastes_m_s_de_lo_que_realmente_necesitas).trimIndent()
         }
     }
 
