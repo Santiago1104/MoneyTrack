@@ -68,37 +68,37 @@ fun EditExpensesScreen(
         )
 
         Card(
-            shape = RoundedCornerShape(12.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            shape = RoundedCornerShape(16.dp), // Borde más redondeado para un look más suave
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp), // Elevación sutil
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(8.dp)
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp), // Margen interno más amplio para dar más espacio
-                horizontalAlignment = Alignment.Start
+                modifier = Modifier.padding(20.dp), // Margen interno más amplio para dar más espacio
             ) {
                 // Campo de nombre del gasto con validación
-                TextField(
-                    value = expenseName,
-                    onValueChange = {
-                        if (!it.all { char -> char.isDigit() }) { // Validar que no sea numérico
-                            expenseName = it
-                        } else {
-                            errorMessage = "El nombre del gasto no puede ser numérico."
-                        }
-                    },
-                    label = { Text("Nombre del Gasto", color = MaterialTheme.colorScheme.onSurfaceVariant) },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                        focusedTextColor = MaterialTheme.colorScheme.onBackground,
-                        unfocusedTextColor = MaterialTheme.colorScheme.onBackground
+                Box{
+                    TextField(
+                        value = expenseName,
+                        onValueChange = {
+                            if (!it.all { char -> char.isDigit() }) { // Validar que no sea numérico
+                                expenseName = it
+                            } else {
+                                errorMessage = "El nombre del gasto no puede ser numérico."
+                            }
+                        },
+                        label = { Text("Nombre del Gasto", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onBackground
+                        )
                     )
-                )
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
