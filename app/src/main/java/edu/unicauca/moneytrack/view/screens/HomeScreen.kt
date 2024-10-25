@@ -180,12 +180,11 @@ fun CircularProgressIndicatorWithText(
     ingresos: Double,
     gastos: Double,
 ) {
-    val total = ingresos - gastos
+    val total = ingresos + gastos
     val progressIngresos = if (total > 0) ingresos / total else 0.5
     val progressGastos = if (total > 0) gastos / total else 0.5
 
     Box(contentAlignment = Alignment.Center) {
-
 
         Canvas(modifier = Modifier.size(200.dp)) {
             val strokeWidth = 16.dp.toPx()
@@ -216,7 +215,7 @@ fun CircularProgressIndicatorWithText(
         }
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "$${total.format(2)}", style = MaterialTheme.typography.headlineMedium)
+            Text(text = "$${(ingresos - gastos).format(2)}", style = MaterialTheme.typography.headlineMedium)
             Text(text = stringResource(id = R.string.CurrentMoney), style = MaterialTheme.typography.bodyMedium)
         }
     }
@@ -252,5 +251,6 @@ fun CircularProgressIndicatorWithText(
         }
     }
 }
+
 
 fun Double.format(digits: Int) = "%.${digits}f".format(this)
