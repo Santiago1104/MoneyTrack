@@ -7,6 +7,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,9 +35,9 @@ fun EditarIngresoScreen(
     }
 
     // Prellenar los campos con los datos actuales del ingreso
-    var referencia by remember { mutableStateOf(TextFieldValue(ingreso.nombre)) }
-    var valor by remember { mutableStateOf(TextFieldValue(ingreso.valor.toString())) }
-    var errorMensaje by remember { mutableStateOf<String?>(null) }
+    var referencia by rememberSaveable  { mutableStateOf(TextFieldValue(ingreso.nombre)) }
+    var valor by rememberSaveable  { mutableStateOf(TextFieldValue(ingreso.valor.toString())) }
+    var errorMensaje by rememberSaveable  { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier

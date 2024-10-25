@@ -6,6 +6,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,9 +26,9 @@ fun NuevoIngresoScreen(
     viewModel: MoneyViewModel,
     onIngresoGuardado: () -> Unit // Callback para navegar después de guardar
 ) {
-    var referencia by remember { mutableStateOf(TextFieldValue("")) }
-    var valor by remember { mutableStateOf(TextFieldValue("")) }
-    var errorMensaje by remember { mutableStateOf<String?>(null) }
+    var referencia by rememberSaveable  { mutableStateOf(TextFieldValue("")) }
+    var valor by rememberSaveable  { mutableStateOf(TextFieldValue("")) }
+    var errorMensaje by rememberSaveable  { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
