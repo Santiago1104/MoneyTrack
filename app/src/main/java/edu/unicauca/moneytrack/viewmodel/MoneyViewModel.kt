@@ -126,7 +126,7 @@ class MoneyViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 db.collection("ingresos").document(ingreso.id).set(ingreso).await()
-                _listaIngresos.postValue(_listaIngresos.value?.plus(ingreso))
+                // No necesitas actualizar _listaIngresos manualmente, el listener lo hará automáticamente.
             } catch (e: Exception) {
                 e.printStackTrace()
             }
