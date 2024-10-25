@@ -1,6 +1,7 @@
 package edu.unicauca.moneytrack.view.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -24,6 +25,8 @@ import java.util.*
 import androidx.compose.material3.AlertDialog
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.ScrollState
 
 @Composable
 fun AddExpensesScreen(
@@ -44,12 +47,22 @@ fun AddExpensesScreen(
     var showSuccessMessage by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
     var dialogMessage by remember { mutableStateOf("") }
-    var categorias by remember { mutableStateOf(mutableListOf("Transporte", "Alimentación", "Servicios", "Arriendo")) }
+    var categorias by remember {
+        mutableStateOf(
+            mutableListOf(
+                "Transporte",
+                "Alimentación",
+                "Servicios",
+                "Arriendo"
+            )
+        )
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -58,7 +71,7 @@ fun AddExpensesScreen(
             style = MaterialTheme.typography.titleLarge,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(top = 24.dp, bottom = 16.dp )
+            modifier = Modifier.padding(top = 24.dp, bottom = 16.dp)
         )
 
         // Dropdown para seleccionar la referencia del gasto
@@ -87,7 +100,10 @@ fun AddExpensesScreen(
                         ),
                         trailingIcon = {
                             IconButton(onClick = { expandedReference = !expandedReference }) {
-                                Icon(Icons.Default.ArrowDropDown, contentDescription = "Select Reference")
+                                Icon(
+                                    Icons.Default.ArrowDropDown,
+                                    contentDescription = "Select Reference"
+                                )
                             }
                         }
                     )
@@ -141,7 +157,10 @@ fun AddExpensesScreen(
                         ),
                         trailingIcon = {
                             IconButton(onClick = { expandedCategory = !expandedCategory }) {
-                                Icon(Icons.Default.ArrowDropDown, contentDescription = "Select Category")
+                                Icon(
+                                    Icons.Default.ArrowDropDown,
+                                    contentDescription = "Select Category"
+                                )
                             }
                         }
                     )
@@ -256,7 +275,8 @@ fun AddExpensesScreen(
                     showDialog = true
                     showSuccessMessage = true
                 } else {
-                    errorMessage = "Por favor ingresa un nombre válido, un valor numérico, selecciona una referencia y una categoría."
+                    errorMessage =
+                        "Por favor ingresa un nombre válido, un valor numérico, selecciona una referencia y una categoría."
                     dialogMessage = errorMessage
                     showDialog = true
                 }

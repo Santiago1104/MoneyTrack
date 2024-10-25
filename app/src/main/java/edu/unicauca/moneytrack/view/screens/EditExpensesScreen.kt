@@ -1,8 +1,10 @@
 package edu.unicauca.moneytrack.view.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
@@ -24,12 +26,13 @@ import java.util.UUID
 
 import java.text.SimpleDateFormat
 import java.util.Date
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.ScrollState
+
 
 @Composable
 fun EditExpensesScreen(
-    navController: NavController,
-    expenseId: String,
-    moneyViewModel: MoneyViewModel = viewModel()
+    navController: NavController, expenseId: String, moneyViewModel: MoneyViewModel = viewModel()
 ) {
     val listaGastos by moneyViewModel.listaGastos.observeAsState(emptyList())
     val listaIngresos by moneyViewModel.listaIngresos.observeAsState(emptyList())
@@ -37,8 +40,16 @@ fun EditExpensesScreen(
     val expenseToEdit = listaGastos.find { it.id == expenseId }
 
     var expenseName by remember(expenseToEdit) { mutableStateOf(expenseToEdit?.nombre ?: "") }
-    var expenseValue by remember(expenseToEdit) { mutableStateOf(expenseToEdit?.valor?.toInt()?.toString() ?: "") }
-    var selectedCategory by remember(expenseToEdit) { mutableStateOf(expenseToEdit?.categoria ?: "") }
+    var expenseValue by remember(expenseToEdit) {
+        mutableStateOf(
+            expenseToEdit?.valor?.toInt()?.toString() ?: ""
+        )
+    }
+    var selectedCategory by remember(expenseToEdit) {
+        mutableStateOf(
+            expenseToEdit?.categoria ?: ""
+        )
+    }
     var customCategory by remember(expenseToEdit) { mutableStateOf("") }
     var selectedReference by remember(expenseToEdit) { mutableStateOf<clsEntry?>(null) }
     var expandedReference by remember { mutableStateOf(false) }
@@ -55,7 +66,8 @@ fun EditExpensesScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -79,24 +91,24 @@ fun EditExpensesScreen(
                 modifier = Modifier.padding(20.dp), // Margen interno más amplio para dar más espacio
             ) {
                 // Campo de nombre del gasto con validación
-                Box{
-                    TextField(
-                        value = expenseName,
-                        onValueChange = {
-                            if (!it.all { char -> char.isDigit() }) { // Validar que no sea numérico
-                                expenseName = it
-                            } else {
-                                errorMessage = "El nombre del gasto no puede ser numérico."
-                            }
-                        },
-                        label = { Text("Nombre del Gasto", color = MaterialTheme.colorScheme.onSurfaceVariant) },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            focusedTextColor = MaterialTheme.colorScheme.onBackground,
-                            unfocusedTextColor = MaterialTheme.colorScheme.onBackground
+                Box {
+                    TextField(value = expenseName, onValueChange = {
+                        if (!it.all { char -> char.isDigit() }) { // Validar que no sea numérico
+                            expenseName = it
+                        } else {
+                            errorMessage = "El nombre del gasto no puede ser numérico."
+                        }
+                    }, label = {
+                        Text(
+                            "Nombre del Gasto",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
+                    }, modifier = Modifier.fillMaxWidth(), colors = TextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onBackground
+                    )
                     )
                 }
 
@@ -115,12 +127,19 @@ fun EditExpensesScreen(
                                 }
                             }
                         },
-                        label = { Text("Categoría", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                        label = {
+                            Text(
+                                "Categoría", color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
                         modifier = Modifier.fillMaxWidth(),
                         readOnly = selectedCategory != "Otro",
                         trailingIcon = {
                             IconButton(onClick = { expandedCategory = !expandedCategory }) {
-                                Icon(Icons.Default.ArrowDropDown, contentDescription = "Seleccionar Categoría")
+                                Icon(
+                                    Icons.Default.ArrowDropDown,
+                                    contentDescription = "Seleccionar Categoría"
+                                )
                             }
                         },
                         colors = TextFieldDefaults.colors(
@@ -132,33 +151,25 @@ fun EditExpensesScreen(
                     )
                     DropdownMenu(
                         expanded = expandedCategory,
-                        onDismissRequest = { expandedCategory = false }
-                    ) {
+                        onDismissRequest = { expandedCategory = false }) {
                         categorias.forEach { categoria ->
-                            DropdownMenuItem(
-                                text = { Text(text = categoria) },
-                                onClick = {
-                                    selectedCategory = categoria
-                                    expandedCategory = false
-                                    if (categoria != "Otro") customCategory = ""
-                                }
-                            )
-                        }
-                        DropdownMenuItem(
-                            text = { Text(text = "Otro") },
-                            onClick = {
-                                selectedCategory = "Otro"
+                            DropdownMenuItem(text = { Text(text = categoria) }, onClick = {
+                                selectedCategory = categoria
                                 expandedCategory = false
-                            }
-                        )
+                                if (categoria != "Otro") customCategory = ""
+                            })
+                        }
+                        DropdownMenuItem(text = { Text(text = "Otro") }, onClick = {
+                            selectedCategory = "Otro"
+                            expandedCategory = false
+                        })
                     }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Campo de valor del gasto
-                TextField(
-                    value = expenseValue,
+                TextField(value = expenseValue,
                     onValueChange = {
                         if (it.all { char -> char.isDigit() } && it.length <= 7) { // Validar solo números enteros no negativos
                             expenseValue = it
@@ -166,7 +177,11 @@ fun EditExpensesScreen(
                             errorMessage = "El valor debe ser un número entero no negativo."
                         }
                     },
-                    label = { Text("Valor en Pesos", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                    label = {
+                        Text(
+                            "Valor en Pesos", color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                     colors = TextFieldDefaults.colors(
@@ -187,8 +202,7 @@ fun EditExpensesScreen(
         }
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Button(
                 onClick = {
@@ -196,11 +210,13 @@ fun EditExpensesScreen(
                     showSuccessMessage = false
                     val valorGasto = expenseValue.toIntOrNull()
 
-                    if (expenseName.isNotBlank() && valorGasto != null && selectedReference != null &&
-                        (selectedCategory.isNotBlank() || customCategory.isNotBlank())) {
+                    if (expenseName.isNotBlank() && valorGasto != null && selectedReference != null && (selectedCategory.isNotBlank() || customCategory.isNotBlank())) {
 
                         val nuevaCategoria = if (selectedCategory == "Otro") {
-                            if (customCategory.isNotBlank() && !categorias.contains(customCategory)) {
+                            if (customCategory.isNotBlank() && !categorias.contains(
+                                    customCategory
+                                )
+                            ) {
                                 customCategory.also { categorias.add(it) }
                             } else {
                                 errorMessage = "Por favor ingresa un nombre de categoría válido."
