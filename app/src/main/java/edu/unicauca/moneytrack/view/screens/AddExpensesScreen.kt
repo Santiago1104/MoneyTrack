@@ -38,18 +38,18 @@ fun AddExpensesScreen(
     val listaGastos by moneyViewModel.listaGastos.observeAsState(emptyList())
 
 // guardar el estado en el giro de pantalla
-    var expenseName by rememberSaveable { mutableStateOf("") }
-    var expenseValue by rememberSaveable { mutableStateOf("") }
-    var selectedCategory by rememberSaveable { mutableStateOf("") }
-    var customCategory by rememberSaveable { mutableStateOf("") }
-    var selectedReference by rememberSaveable { mutableStateOf<clsEntry?>(null) }
-    var expandedReference by rememberSaveable { mutableStateOf(false) }
-    var expandedCategory by rememberSaveable { mutableStateOf(false) }
-    var errorMessage by rememberSaveable { mutableStateOf("") }
-    var showSuccessMessage by rememberSaveable { mutableStateOf(false) }
-    var showDialog by rememberSaveable { mutableStateOf(false) }
-    var dialogMessage by rememberSaveable { mutableStateOf("") }
-    var categorias by rememberSaveable {
+    var expenseName by remember  { mutableStateOf("") }
+    var expenseValue by remember  { mutableStateOf("") }
+    var selectedCategory by remember  { mutableStateOf("") }
+    var customCategory by remember  { mutableStateOf("") }
+    var selectedReference by remember  { mutableStateOf<clsEntry?>(null) }
+    var expandedReference by remember  { mutableStateOf(false) }
+    var expandedCategory by remember  { mutableStateOf(false) }
+    var errorMessage by remember  { mutableStateOf("") }
+    var showSuccessMessage by remember  { mutableStateOf(false) }
+    var showDialog by remember  { mutableStateOf(false) }
+    var dialogMessage by remember  { mutableStateOf("") }
+    var categorias by remember  {
         mutableStateOf(
             mutableListOf(
                 "Transporte",

@@ -26,9 +26,9 @@ fun NuevoIngresoScreen(
     viewModel: MoneyViewModel,
     onIngresoGuardado: () -> Unit // Callback para navegar después de guardar
 ) {
-    var referencia by rememberSaveable  { mutableStateOf(TextFieldValue("")) }
-    var valor by rememberSaveable  { mutableStateOf(TextFieldValue("")) }
-    var errorMensaje by rememberSaveable  { mutableStateOf<String?>(null) }
+    var referencia by remember   { mutableStateOf(TextFieldValue("")) }
+    var valor by remember   { mutableStateOf(TextFieldValue("")) }
+    var errorMensaje by remember   { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier

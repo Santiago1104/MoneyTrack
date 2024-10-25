@@ -40,23 +40,23 @@ fun EditExpensesScreen(
 
     val expenseToEdit = listaGastos.find { it.id == expenseId }
 
-    var expenseName by rememberSaveable(expenseToEdit) { mutableStateOf(expenseToEdit?.nombre ?: "") }
-    var expenseValue by rememberSaveable(expenseToEdit) {
+    var expenseName by remember (expenseToEdit) { mutableStateOf(expenseToEdit?.nombre ?: "") }
+    var expenseValue by remember (expenseToEdit) {
         mutableStateOf(
             expenseToEdit?.valor?.toInt()?.toString() ?: ""
         )
     }
-    var selectedCategory by rememberSaveable(expenseToEdit) {
+    var selectedCategory by remember (expenseToEdit) {
         mutableStateOf(
             expenseToEdit?.categoria ?: ""
         )
     }
-    var customCategory by rememberSaveable(expenseToEdit) { mutableStateOf("") }
-    var selectedReference by rememberSaveable(expenseToEdit) { mutableStateOf<clsEntry?>(null) }
-    var expandedReference by rememberSaveable { mutableStateOf(false) }
-    var expandedCategory by rememberSaveable { mutableStateOf(false) }
-    var errorMessage by rememberSaveable { mutableStateOf("") }
-    var showSuccessMessage by rememberSaveable { mutableStateOf(false) }
+    var customCategory by remember (expenseToEdit) { mutableStateOf("") }
+    var selectedReference by remember (expenseToEdit) { mutableStateOf<clsEntry?>(null) }
+    var expandedReference by remember  { mutableStateOf(false) }
+    var expandedCategory by remember  { mutableStateOf(false) }
+    var errorMessage by remember  { mutableStateOf("") }
+    var showSuccessMessage by remember  { mutableStateOf(false) }
 
     val categorias = mutableListOf("Transporte", "Alimentación", "Servicios", "Arriendo")
 

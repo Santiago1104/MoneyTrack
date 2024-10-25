@@ -35,9 +35,9 @@ fun EditarIngresoScreen(
     }
 
     // Prellenar los campos con los datos actuales del ingreso
-    var referencia by rememberSaveable  { mutableStateOf(TextFieldValue(ingreso.nombre)) }
-    var valor by rememberSaveable  { mutableStateOf(TextFieldValue(ingreso.valor.toString())) }
-    var errorMensaje by rememberSaveable  { mutableStateOf<String?>(null) }
+    var referencia by remember   { mutableStateOf(TextFieldValue(ingreso.nombre)) }
+    var valor by remember   { mutableStateOf(TextFieldValue(ingreso.valor.toString())) }
+    var errorMensaje by remember   { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
